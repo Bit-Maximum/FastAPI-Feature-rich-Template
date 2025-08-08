@@ -1,25 +1,52 @@
-FROM python:3.11.4-slim-bullseye AS prod
+# Start from a slim version of Python 3.13
+FROM python:3.13-slim AS base
 
+# Set Python Envs
+ENV APP_HOME=/app/ PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_COMPILE_BYTECODE=1
 
-RUN pip install poetry==1.8.2
+WORKDIR $APP_HOME
 
-# Configuring poetry
-RUN poetry config virtualenvs.create false
-RUN poetry config cache-dir /tmp/poetry_cache
+# Install in a single layer, and clean up in the same layer to minimize image size
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends  \
+    libpq-dev  \
+    curl  \
+    ca-certificates  \
+    wget \
+    && pip install --prefer-binary --no-cache-dir --upgrade pip \
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    && rm -rf /var/lib/apt/lists/* \
 
-# Copying requirements of a project
-COPY pyproject.toml poetry.lock /app/src/
-WORKDIR /app/src
+# Install uv
+# Ref: https://docs.astral.sh/uv/guides/integration/docker/#installing-uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# Installing requirements
-RUN --mount=type=cache,target=/tmp/poetry_cache poetry install --only main
+# Place executables in the environment at the front of the path
+# Ref: https://docs.astral.sh/uv/guides/integration/docker/#using-the-environment
+ENV PATH="/app/.venv/bin:$PATH" UV_LINK_MODE=copy PYTHONPATH=$APP_HOME
 
-# Copying actuall application
-COPY . /app/src/
-RUN --mount=type=cache,target=/tmp/poetry_cache poetry install --only main
+# ===== Prod stage =====
+FROM base AS prod
 
-CMD ["/usr/local/bin/python", "-m", "FastAPI_super_template"]
+# Install base dependencies
+# Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --locked --no-install-project --no-dev
 
+COPY ./pyproject.toml ./uv.lock $APP_HOME
+
+COPY ./src $APP_HOME/src
+
+# Sync the project
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked --no-dev
+
+# Run app - exec form (doesn’t start a shell on its own)
+CMD ["/usr/local/bin/python", "-m", "main.py"]
+
+# ===== Dev stage =====
 FROM prod AS dev
 
-RUN --mount=type=cache,target=/tmp/poetry_cache poetry install
+RUN uv sync --locked
