@@ -1,0 +1,94 @@
+services:
+  api: &main_app
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: FastAPI_super_template:${FASTAPI_SUPER_TEMPLATE_VERSION:-latest}
+    restart: always
+    env_file:
+      - .env
+    labels:
+      # Enables traefik for this container.
+      - traefik.enable=true
+      - traefik.http.routers.src.rule=Host(`${FASTAPI_SUPER_TEMPLATE_TRAEFIK_HOST:-src.localhost}`)
+      - traefik.http.routers.src.entrypoints=http
+      - traefik.http.routers.src.service=src
+      - traefik.http.services.src.loadbalancer.server.port=${FASTAPI_SUPER_TEMPLATE_PORT:-8000}
+    networks:
+      - default
+      - traefik-shared
+    depends_on:
+      redis:
+        condition: service_healthy
+      rmq:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      FASTAPI_SUPER_TEMPLATE_HOST: 0.0.0.0
+      FASTAPI_SUPER_TEMPLATE_RABBIT_HOST: src-rmq
+      FASTAPI_SUPER_TEMPLATE_REDIS_HOST: src-redis
+      TESTKAFKA_KAFKA_BOOTSTRAP_SERVERS: '["src-kafka:9092"]'
+
+  taskiq-worker:
+    <<: *main_app
+    labels: []
+    command:
+      - taskiq
+      - worker
+      - src.tkq:broker
+
+  redis:
+    image: bitnami/redis:6.2.5
+    hostname: "src-redis"
+    restart: always
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+    healthcheck:
+      test: redis-cli ping
+      interval: 1s
+      timeout: 3s
+      retries: 50
+
+  rmq:
+    image: rabbitmq:3.9.16-alpine
+    hostname: "src-rmq"
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+      RABBITMQ_DEFAULT_VHOST: "/"
+    healthcheck:
+      test: rabbitmq-diagnostics check_running -q
+      interval: 3s
+      timeout: 3s
+      retries: 50
+
+  kafka:
+    image: bitnami/kafka:3.7.1-debian-12-r0
+    hostname: "src-kafka"
+    environment:
+      KAFKA_CFG_NODE_ID: "0"
+      KAFKA_CFG_PROCESS_ROLES: "controller,broker"
+      KAFKA_CFG_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094"
+      KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094"
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT"
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "0@src-kafka:9093"
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+    # Uncomment it to connect from localhost.
+    # ports:
+    #   - 9094:9094
+    healthcheck:
+      test: kafka-topics.sh --list --bootstrap-server localhost:9092
+      interval: 1s
+      timeout: 3s
+      retries: 30
+
+
+
+networks:
+  # Network for traefik.
+  traefik-shared:
+    name: traefik-shared

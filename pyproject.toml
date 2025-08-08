@@ -1,0 +1,137 @@
+[project]
+name = "fastapi-sdk"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.13"
+dependencies = [
+    "aio-pika>=9.5.7",
+    "aiofiles>=24.1.0",
+    "aiokafka>=0.12.0",
+    "alembic>=1.16.4",
+    "email-validator>=2.2.0",
+    "emails>=0.6",
+    "fastapi>=0.116.1",
+    "gunicorn>=23.0.0",
+    "httptools>=0.6.4",
+    "jinja2>=3.1.6",
+    "loguru>=0.7.3",
+    "opentelemetry-api>=1.36.0",
+    "opentelemetry-exporter-otlp>=1.36.0",
+    "opentelemetry-instrumentation>=0.57b0",
+    "opentelemetry-instrumentation-aio-pika>=0.57b0",
+    "opentelemetry-instrumentation-fastapi>=0.57b0",
+    "opentelemetry-instrumentation-redis>=0.57b0",
+    "opentelemetry-sdk>=1.36.0",
+    "passlib[bcrypt]>=1.7.4",
+    "prometheus-client>=0.22.1",
+    "prometheus-fastapi-instrumentator>=7.1.0",
+    "psycopg[binary]>=3.2.9",
+    "pydantic-settings>=2.10.1",
+    "pyjwt>=2.10.1",
+    "pymongo>=4.14.0",
+    "redis[hiredis]>=6.4.0",
+    "sentry-sdk>=2.34.1",
+    "taskiq>=0.11.18",
+    "taskiq-aio-pika>=0.4.3",
+    "taskiq-fastapi>=0.3.5",
+    "taskiq-redis>=1.1.0",
+    "ujson>=5.10.0",
+    "uvicorn>=0.35.0",
+    "yarl>=1.20.1",
+]
+
+[dependency-groups]
+dev = [
+    "anyio>=4.10.0",
+    "black>=25.1.0",
+    "coverage>=7.10.2",
+    "fakeredis>=2.30.3",
+    "httpx>=0.28.1",
+    "mypy>=1.17.1",
+    "pre-commit>=4.2.0",
+    "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
+    "pytest-env>=1.1.5",
+    "ruff>=0.12.8",
+    "taskiq[reload]>=0.11.18",
+]
+
+[tool.ruff]
+lint.select = ["ALL"]
+lint.ignore = [
+    "BLE001",
+    "COM812",
+    "ISC001",
+    "D100",
+    "D104",
+    "D105",
+    "D107",
+    "D205",
+    "D211",
+    "D212",
+    "E203",
+    "E266",
+    "ANN204",
+    "S602",
+    "ERA001",
+    "PLR0913",
+    "N803",
+    "N815",
+    "UP046",
+]
+target-version = "py313"
+line-length = 100
+
+[tool.flake8]
+max-line-length = 100
+
+[tool.black]
+line-length = 100
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"src/controller/api/endpoints/customer.py" = ["N803", "B008"]
+"src/repository/models/__init__.py" = ["N818", "F401"]
+"tests/*" = [
+    "S101", # Use of assert detected
+]
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+src_paths = ["src",]
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+allow_subclassing_any = true
+allow_untyped_calls = true
+pretty = true
+show_error_codes = true
+implicit_reexport = true
+allow_untyped_decorators = true
+warn_unused_ignores = false
+warn_return_any = false
+namespace_packages = true
+
+# Remove this and add `types-redis`
+# when the issue https://github.com/python/typeshed/issues/8242 is resolved.
+[[tool.mypy.overrides]]
+module = [
+    'redis.asyncio'
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "error",
+    "ignore::DeprecationWarning",
+    "ignore:.*unclosed.*:ResourceWarning",
+]
+env = [
+    "FASTAPI_SUPER_TEMPLATE_ENVIRONMENT=pytest",
+    "FASTAPI_SUPER_TEMPLATE_DB_BASE=FastAPI_super_template_test",
+    "FASTAPI_SUPER_TEMPLATE_SENTRY_DSN=",
+]
