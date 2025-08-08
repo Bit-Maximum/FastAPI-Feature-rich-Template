@@ -1,5 +1,5 @@
 import uuid
-from typing import Any, AsyncGenerator
+from collections.abc import AsyncGenerator
 from unittest.mock import Mock
 
 import pytest
@@ -32,7 +32,7 @@ def anyio_backend() -> str:
 
 
 @pytest.fixture
-async def test_rmq_pool() -> AsyncGenerator[Channel, None]:
+async def test_rmq_pool() -> AsyncGenerator[Channel]:
     """
     Create rabbitMQ pool.
 
@@ -68,7 +68,7 @@ async def test_routing_key() -> str:
 async def test_exchange(
     test_exchange_name: str,
     test_rmq_pool: Pool[Channel],
-) -> AsyncGenerator[AbstractExchange, None]:
+) -> AsyncGenerator[AbstractExchange]:
     """
     Creates test exchange.
 
@@ -91,7 +91,7 @@ async def test_queue(
     test_exchange: AbstractExchange,
     test_rmq_pool: Pool[Channel],
     test_routing_key: str,
-) -> AsyncGenerator[AbstractQueue, None]:
+) -> AsyncGenerator[AbstractQueue]:
     """
     Creates queue connected to exchange.
 
@@ -112,7 +112,7 @@ async def test_queue(
 
 
 @pytest.fixture
-async def test_kafka_producer() -> AsyncGenerator[AIOKafkaProducer, None]:
+async def test_kafka_producer() -> AsyncGenerator[AIOKafkaProducer]:
     """
     Creates kafka's producer.
 
@@ -125,7 +125,7 @@ async def test_kafka_producer() -> AsyncGenerator[AIOKafkaProducer, None]:
 
 
 @pytest.fixture
-async def fake_redis_pool() -> AsyncGenerator[ConnectionPool, None]:
+async def fake_redis_pool() -> AsyncGenerator[ConnectionPool]:
     """
     Get instance of a fake redis.
 
@@ -161,8 +161,7 @@ def fastapi_app(
 @pytest.fixture
 async def client(
     fastapi_app: FastAPI,
-    anyio_backend: Any,
-) -> AsyncGenerator[AsyncClient, None]:
+) -> AsyncGenerator[AsyncClient]:
     """
     Fixture that creates client for requesting server.
 

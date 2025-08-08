@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import APIRouter
 from fastapi.param_functions import Depends
 from redis.asyncio import ConnectionPool, Redis
@@ -7,11 +9,13 @@ from src.web.api.redis.schema import RedisValueDTO
 
 router = APIRouter()
 
+CommonDeps = Annotated[ConnectionPool, Depends(get_redis_pool)]
 
-@router.get("/", response_model=RedisValueDTO)
+
+@router.get("/")
 async def get_redis_value(
     key: str,
-    redis_pool: ConnectionPool = Depends(get_redis_pool),
+    redis_pool: CommonDeps,
 ) -> RedisValueDTO:
     """
     Get value from redis.
@@ -31,7 +35,7 @@ async def get_redis_value(
 @router.put("/")
 async def set_redis_value(
     redis_value: RedisValueDTO,
-    redis_pool: ConnectionPool = Depends(get_redis_pool),
+    redis_pool: CommonDeps,
 ) -> None:
     """
     Set value in redis.

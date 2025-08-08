@@ -1,5 +1,5 @@
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 from fastapi import FastAPI
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
@@ -106,7 +106,7 @@ def setup_prometheus(app: FastAPI) -> None:  # pragma: no cover
 @asynccontextmanager
 async def lifespan_setup(
     app: FastAPI,
-) -> AsyncGenerator[None, None]:  # pragma: no cover
+) -> AsyncGenerator[None]:  # pragma: no cover
     """
     Actions to run on application startup.
 
@@ -116,7 +116,6 @@ async def lifespan_setup(
     :param app: the fastAPI application.
     :return: function that actually performs actions.
     """
-
     app.middleware_stack = None
     if not broker.is_worker_process:
         await broker.startup()

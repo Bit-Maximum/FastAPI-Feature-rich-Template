@@ -1,6 +1,6 @@
 import logging
 import sys
-from typing import Any, Union
+from typing import Any
 
 from loguru import logger
 from opentelemetry.trace import INVALID_SPAN, INVALID_SPAN_CONTEXT, get_current_span
@@ -26,14 +26,14 @@ class InterceptHandler(logging.Handler):
         :param record: record to log.
         """
         try:
-            level: Union[str, int] = logger.level(record.levelname).name
+            level: str | int = logger.level(record.levelname).name
         except ValueError:
             level = record.levelno
 
         # Find caller from where originated the logged message
         frame, depth = logging.currentframe(), 2
         while frame.f_code.co_filename == logging.__file__:
-            frame = frame.f_back  # type: ignore
+            frame = frame.f_back
             depth += 1
 
         logger.opt(depth=depth, exception=record.exc_info).log(
@@ -97,5 +97,5 @@ def configure_logging() -> None:  # pragma: no cover
     logger.add(
         sys.stdout,
         level=settings.log_level.value,
-        format=record_formatter,  # type: ignore
+        format=record_formatter,
     )

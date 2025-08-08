@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from aio_pika import Channel, Message
 from aio_pika.pool import Pool
 from fastapi import APIRouter, Depends
@@ -7,11 +9,13 @@ from src.web.api.rabbit.schema import RMQMessageDTO
 
 router = APIRouter()
 
+CommonDeps = Annotated[Pool[Channel], Depends(get_rmq_channel_pool)]
+
 
 @router.post("/")
 async def send_rabbit_message(
     message: RMQMessageDTO,
-    pool: Pool[Channel] = Depends(get_rmq_channel_pool),
+    pool: CommonDeps,
 ) -> None:
     """
     Posts a message in a rabbitMQ's exchange.

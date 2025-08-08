@@ -1,11 +1,14 @@
+from typing import Annotated
+
 from aio_pika import Channel
 from aio_pika.pool import Pool
 from fastapi import Request
 from taskiq import TaskiqDepends
+from taskiq_dependencies import Depends
 
 
 def get_rmq_channel_pool(
-    request: Request = TaskiqDepends(),
+    request: Annotated[Request, Depends(TaskiqDepends)],
 ) -> Pool[Channel]:  # pragma: no cover
     """
     Get channel pool from the state.

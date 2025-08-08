@@ -1,13 +1,15 @@
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
+from typing import Annotated
 
 from redis.asyncio import Redis
 from starlette.requests import Request
 from taskiq import TaskiqDepends
+from taskiq_dependencies import Depends
 
 
 async def get_redis_pool(
-    request: Request = TaskiqDepends(),
-) -> AsyncGenerator[Redis, None]:  # pragma: no cover
+    request: Annotated[Request, Depends(TaskiqDepends)],
+) -> AsyncGenerator[Redis]:  # pragma: no cover
     """
     Returns connection pool.
 

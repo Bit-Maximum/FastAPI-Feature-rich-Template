@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from aiokafka import AIOKafkaProducer
 from fastapi import APIRouter, Depends
 
@@ -6,11 +8,13 @@ from src.web.api.kafka.schema import KafkaMessage
 
 router = APIRouter()
 
+CommonDeps = Annotated[AIOKafkaProducer, Depends(get_kafka_producer)]
+
 
 @router.post("/")
 async def send_kafka_message(
     kafka_message: KafkaMessage,
-    producer: AIOKafkaProducer = Depends(get_kafka_producer),
+    producer: CommonDeps,
 ) -> None:
     """
     Sends message to kafka.

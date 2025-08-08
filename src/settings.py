@@ -1,7 +1,28 @@
+"""File with environment variables and general configuration logic.
+
+`SECRET_KEY`, `ENVIRONMENT` etc. map to env variables with the same names.
+
+Pydantic priority ordering:
+
+1. (Most important, will overwrite everything) - environment variables
+2. `.env` file in root folder of project
+3. Default values
+
+For project name, version, description we use pyproject.toml
+For the rest, we use file `.env` (gitignored), see `.env.example`
+
+`SQLALCHEMY_DATABASE_URI` is  meant to be validated at the runtime,
+do not change unless you know what are you doing.
+The validator is to build full URI (TCP protocol) to databases to avoid typo bugs.
+
+See https://pydantic-docs.helpmanual.io/usage/settings/
+
+Note, complex types like lists are read as json-encoded strings.
+"""
+
 import enum
 from pathlib import Path
 from tempfile import gettempdir
-from typing import List, Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from yarl import URL
@@ -43,15 +64,15 @@ class Settings(BaseSettings):
     # Variables for Redis
     redis_host: str = "src-redis"
     redis_port: int = 6379
-    redis_user: Optional[str] = None
-    redis_pass: Optional[str] = None
-    redis_base: Optional[int] = None
+    redis_user: str | None = None
+    redis_pass: str | None = None
+    redis_base: int | None = None
 
     # Variables for RabbitMQ
     rabbit_host: str = "src-rmq"
     rabbit_port: int = 5672
     rabbit_user: str = "guest"
-    rabbit_pass: str = "guest"
+    rabbit_pass: str
     rabbit_vhost: str = "/"
 
     rabbit_pool_size: int = 2
@@ -62,14 +83,14 @@ class Settings(BaseSettings):
     prometheus_dir: Path = TEMP_DIR / "prom"
 
     # Sentry's configuration.
-    sentry_dsn: Optional[str] = None
+    sentry_dsn: str | None = None
     sentry_sample_rate: float = 1.0
 
     # Grpc endpoint for opentelemetry.
     # E.G. http://localhost:4317
-    opentelemetry_endpoint: Optional[str] = None
+    opentelemetry_endpoint: str | None = None
 
-    kafka_bootstrap_servers: List[str] = ["src-kafka:9092"]
+    kafka_bootstrap_servers: list[str] = ["src-kafka:9092"]
 
     @property
     def redis_url(self) -> URL:

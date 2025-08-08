@@ -7,7 +7,7 @@ from uvicorn.workers import UvicornWorker as BaseUvicornWorker
 try:
     import uvloop  # (Found nested import)
 except ImportError:
-    uvloop = None  # type: ignore  # (variables overlap)
+    uvloop = None
 
 
 class UvicornWorker(BaseUvicornWorker):
@@ -42,7 +42,7 @@ class GunicornApplication(BaseApplication):
         host: str,
         port: int,
         workers: int,
-        **kwargs: Any,
+        **kwargs: dict[str, Any],
     ) -> None:
         self.options = {
             "bind": f"{host}:{port}",

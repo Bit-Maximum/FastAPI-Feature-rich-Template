@@ -66,12 +66,12 @@ src
 This application can be configured with environment variables.
 
 You can create `.env` file in the root directory and place all
-environment variables here. 
+environment variables here.
 
 All environment variables should start with "FASTAPI_SUPER_TEMPLATE_" prefix.
 
 For example if you see in your "FastAPI_super_template/settings.py" a variable named like
-`random_parameter`, you should provide the "FASTAPI_SUPER_TEMPLATE_RANDOM_PARAMETER" 
+`random_parameter`, you should provide the "FASTAPI_SUPER_TEMPLATE_RANDOM_PARAMETER"
 variable to configure the value. This behaviour can be changed by overriding `env_prefix` property
 in `FastAPI_super_template.settings.Settings.Config`.
 
@@ -83,9 +83,9 @@ FASTAPI_SUPER_TEMPLATE_ENVIRONMENT="dev"
 ```
 
 You can read more about BaseSettings class here: https://pydantic-docs.helpmanual.io/usage/settings/
-## OpenTelemetry 
+## OpenTelemetry
 
-If you want to start your project with OpenTelemetry collector 
+If you want to start your project with OpenTelemetry collector
 you can add `-f ./deploy/docker-compose.otlp.yml` to your docker command.
 
 Like this:
@@ -94,11 +94,11 @@ Like this:
 docker-compose -f docker-compose.yml -f deploy/docker-compose.otlp.yml --project-directory . up
 ```
 
-This command will start OpenTelemetry collector and jaeger. 
+This command will start OpenTelemetry collector and jaeger.
 After sending a requests you can see traces in jaeger's UI
 at http://localhost:16686/.
 
-This docker configuration is not supposed to be used in production. 
+This docker configuration is not supposed to be used in production.
 It's only for demo purpose.
 
 You can read more about OpenTelemetry here: https://opentelemetry.io/

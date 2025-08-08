@@ -1,10 +1,13 @@
+from typing import Annotated
+
 from aiokafka import AIOKafkaProducer
 from fastapi import Request
 from taskiq import TaskiqDepends
+from taskiq_dependencies import Depends
 
 
 def get_kafka_producer(
-    request: Request = TaskiqDepends(),
+    request: Annotated[Request, Depends(TaskiqDepends)],
 ) -> AIOKafkaProducer:  # pragma: no cover
     """
     Returns kafka producer.
