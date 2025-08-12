@@ -1,1 +1,1 @@
-"""Tests for src."""
+"""Tests for app."""

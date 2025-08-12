@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from httpx import AsyncClient
 from starlette import status
 
-from src.settings import settings
+from app.settings import settings
 
 
 @pytest.mark.anyio

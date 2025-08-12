@@ -10,7 +10,7 @@ services:
     - .:/app/src/
     environment:
       # Enables autoreload.
-      FASTAPI_SUPER_TEMPLATE_RELOAD: "True"
+      APP_RELOAD: "True"
 
   taskiq-worker:
     volumes:
@@ -19,5 +19,5 @@ services:
     command:
       - taskiq
       - worker
-      - src.tkq:broker
+      - app.tkq:broker
       - --reload

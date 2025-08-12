@@ -2,16 +2,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: "FastAPI-super-template"
-  name: "FastAPI-super-template-rmq"
+  namespace: "app"
+  name: "app-rmq"
 spec:
   selector:
     matchLabels:
-      app: "FastAPI-super-template-rmq"
+      app: "app-rmq"
   template:
     metadata:
       labels:
-        app: "FastAPI-super-template-rmq"
+        app: "app-rmq"
     spec:
       containers:
         - name: rabbit
@@ -40,11 +40,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: "FastAPI-super-template"
-  name: "FastAPI-super-template-rmq-service"
+  namespace: "app"
+  name: "app-rmq-service"
 spec:
   selector:
-    app: "FastAPI-super-template-rmq"
+    app: "app-rmq"
   ports:
     - port: 5672
       targetPort: amqp

@@ -2,16 +2,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: "FastAPI-super-template"
-  name: "FastAPI-super-template-redis"
+  namespace: "app"
+  name: "app-redis"
 spec:
   selector:
     matchLabels:
-      app: "FastAPI-super-template-redis"
+      app: "app-redis"
   template:
     metadata:
       labels:
-        app: "FastAPI-super-template-redis"
+        app: "app-redis"
     spec:
       containers:
         - name: redis
@@ -34,11 +34,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: "FastAPI-super-template"
-  name: "FastAPI-super-template-redis-service"
+  namespace: "app"
+  name: "app-redis-service"
 spec:
   selector:
-    app: "FastAPI-super-template-redis"
+    app: "app-redis"
   ports:
     - port: 6379
       targetPort: 6379

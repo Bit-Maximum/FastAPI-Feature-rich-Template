@@ -12,13 +12,24 @@ from fakeredis.aioredis import FakeConnection
 from fastapi import FastAPI
 from httpx import AsyncClient
 from redis.asyncio import ConnectionPool
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 
-from src.services.kafka.dependencies import get_kafka_producer
-from src.services.kafka.lifespan import init_kafka, shutdown_kafka
-from src.services.rabbit.dependencies import get_rmq_channel_pool
-from src.services.rabbit.lifespan import init_rabbit, shutdown_rabbit
-from src.services.redis.dependency import get_redis_pool
-from src.web.application import get_app
+from app.db.dependencies import get_db_session
+from app.db.meta import meta
+from app.db.models import load_all_models
+from app.db.utils import create_database, drop_database
+from app.services.kafka.dependencies import get_kafka_producer
+from app.services.kafka.lifespan import init_kafka, shutdown_kafka
+from app.services.rabbit.dependencies import get_rmq_channel_pool
+from app.services.rabbit.lifespan import init_rabbit, shutdown_rabbit
+from app.services.redis.dependency import get_redis_pool
+from app.settings import settings
+from app.web.application import get_app
 
 
 @pytest.fixture(scope="session")
@@ -29,6 +40,58 @@ def anyio_backend() -> str:
     :return: backend name.
     """
     return "asyncio"
+
+
+@pytest.fixture(scope="session")
+async def _engine() -> AsyncGenerator[AsyncEngine]:
+    """
+    Create engine and databases.
+
+    :yield: new engine.
+    """
+    load_all_models()
+
+    await create_database()
+
+    engine = create_async_engine(str(settings.db_url))
+    async with engine.begin() as conn:
+        await conn.run_sync(meta.create_all)
+
+    try:
+        yield engine
+    finally:
+        await engine.dispose()
+        await drop_database()
+
+
+@pytest.fixture
+async def dbsession(
+    _engine: AsyncEngine,
+) -> AsyncGenerator[AsyncSession]:
+    """
+    Get session to database.
+
+    Fixture that returns a SQLAlchemy session with a SAVEPOINT, and the rollback to it
+    after the test completes.
+
+    :param _engine: current engine.
+    :yields: async session.
+    """
+    connection = await _engine.connect()
+    trans = await connection.begin()
+
+    session_maker = async_sessionmaker(
+        connection,
+        expire_on_commit=False,
+    )
+    session = session_maker()
+
+    try:
+        yield session
+    finally:
+        await session.close()
+        await trans.rollback()
+        await connection.close()
 
 
 @pytest.fixture
@@ -142,6 +205,7 @@ async def fake_redis_pool() -> AsyncGenerator[ConnectionPool]:
 
 @pytest.fixture
 def fastapi_app(
+    dbsession: AsyncSession,
     fake_redis_pool: ConnectionPool,
     test_rmq_pool: Pool[Channel],
     test_kafka_producer: AIOKafkaProducer,
@@ -152,6 +216,7 @@ def fastapi_app(
     :return: fastapi app with mocked dependencies.
     """
     application = get_app()
+    application.dependency_overrides[get_db_session] = lambda: dbsession
     application.dependency_overrides[get_redis_pool] = lambda: fake_redis_pool
     application.dependency_overrides[get_rmq_channel_pool] = lambda: test_rmq_pool
     application.dependency_overrides[get_kafka_producer] = lambda: test_kafka_producer

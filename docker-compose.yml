@@ -3,21 +3,23 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    image: FastAPI_super_template:${FASTAPI_SUPER_TEMPLATE_VERSION:-latest}
+    image: app:${APP_VERSION:-latest}
     restart: always
     env_file:
       - .env
     labels:
       # Enables traefik for this container.
       - traefik.enable=true
-      - traefik.http.routers.src.rule=Host(`${FASTAPI_SUPER_TEMPLATE_TRAEFIK_HOST:-src.localhost}`)
-      - traefik.http.routers.src.entrypoints=http
-      - traefik.http.routers.src.service=src
-      - traefik.http.services.src.loadbalancer.server.port=${FASTAPI_SUPER_TEMPLATE_PORT:-8000}
+      - traefik.http.routers.app.rule=Host(`${APP_TRAEFIK_HOST:-app.localhost}`)
+      - traefik.http.routers.app.entrypoints=http
+      - traefik.http.routers.app.service=app
+      - traefik.http.services.app.loadbalancer.server.port=${APP_PORT:-8000}
     networks:
       - default
       - traefik-shared
     depends_on:
+      db:
+        condition: service_healthy
       redis:
         condition: service_healthy
       rmq:
@@ -25,10 +27,15 @@ services:
       kafka:
         condition: service_healthy
     environment:
-      FASTAPI_SUPER_TEMPLATE_HOST: 0.0.0.0
-      FASTAPI_SUPER_TEMPLATE_RABBIT_HOST: src-rmq
-      FASTAPI_SUPER_TEMPLATE_REDIS_HOST: src-redis
-      TESTKAFKA_KAFKA_BOOTSTRAP_SERVERS: '["src-kafka:9092"]'
+      APP_HOST: 0.0.0.0
+      APP_DB_HOST: app-db
+      APP_DB_PORT: 5432
+      APP_DB_USER: app
+      APP_DB_PASS: app
+      APP_DB_BASE: app
+      APP_RABBIT_HOST: app-rmq
+      APP_REDIS_HOST: app-redis
+      TESTKAFKA_KAFKA_BOOTSTRAP_SERVERS: '["app-kafka:9092"]'
 
   taskiq-worker:
     <<: *main_app
@@ -36,11 +43,41 @@ services:
     command:
       - taskiq
       - worker
-      - src.tkq:broker
+      - app.tkq:broker
+
+  db:
+    image: postgres:16.3-bullseye
+    hostname: app-db
+    environment:
+      POSTGRES_PASSWORD: ""
+      POSTGRES_USER: "app"
+      POSTGRES_DB: "app"
+    volumes:
+      - app-db-data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: pg_isready -U app
+      interval: 2s
+      timeout: 3s
+      retries: 40
+
+  migrator:
+    image: app:${APP_VERSION:-latest}
+    restart: "no"
+    command: alembic upgrade head
+    environment:
+      APP_DB_HOST: app-db
+      APP_DB_PORT: 5432
+      APP_DB_USER: app
+      APP_DB_PASS: app
+      APP_DB_BASE: app
+    depends_on:
+      db:
+        condition: service_healthy
 
   redis:
     image: bitnami/redis:6.2.5
-    hostname: "src-redis"
+    hostname: "app-redis"
     restart: always
     environment:
       ALLOW_EMPTY_PASSWORD: "yes"
@@ -52,11 +89,11 @@ services:
 
   rmq:
     image: rabbitmq:3.9.16-alpine
-    hostname: "src-rmq"
+    hostname: "app-rmq"
     restart: always
     environment:
       RABBITMQ_DEFAULT_USER: "guest"
-      RABBITMQ_DEFAULT_PASS: "guest"
+      RABBITMQ_DEFAULT_PASS: ""
       RABBITMQ_DEFAULT_VHOST: "/"
     healthcheck:
       test: rabbitmq-diagnostics check_running -q
@@ -66,14 +103,14 @@ services:
 
   kafka:
     image: bitnami/kafka:3.7.1-debian-12-r0
-    hostname: "src-kafka"
+    hostname: "app-kafka"
     environment:
       KAFKA_CFG_NODE_ID: "0"
       KAFKA_CFG_PROCESS_ROLES: "controller,broker"
       KAFKA_CFG_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094"
       KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094"
       KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT"
-      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "0@src-kafka:9093"
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "0@app-kafka:9093"
       KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
       KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
@@ -87,6 +124,10 @@ services:
       retries: 30
 
 
+
+volumes:
+  app-db-data:
+    name: app-db-data
 
 networks:
   # Network for traefik.

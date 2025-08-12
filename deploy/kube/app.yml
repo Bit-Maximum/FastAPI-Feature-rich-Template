@@ -2,21 +2,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: FastAPI-super-template
-  name: FastAPI-super-template-app
+  namespace: app
+  name: app-app
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: FastAPI-super-template-app
+      app: app-app
   template:
     metadata:
       labels:
-        app: FastAPI-super-template-app
+        app: app-app
     spec:
       containers:
         - name: app
-          image: FastAPI_super_template:latest
+          image: app:latest
           readinessProbe:
             httpGet:
               path: /api/health
@@ -24,12 +24,14 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 10
           env:
-            - name: FASTAPI_SUPER_TEMPLATE_HOST
+            - name: APP_HOST
               value: "0.0.0.0"
-            - name: FASTAPI_SUPER_TEMPLATE_WORKERS_COUNT
+            - name: APP_WORKERS_COUNT
               value: "10"
-            - name: FASTAPI_SUPER_TEMPLATE_REDIS_HOST
-              value: "FastAPI-super-template-redis-service"
+            - name: APP_DB_HOST
+              value: "app-db-service"
+            - name: APP_REDIS_HOST
+              value: "app-redis-service"
           resources:
             limits:
               memory: "200Mi"
@@ -41,11 +43,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: FastAPI-super-template
-  name: FastAPI-super-template-app-service
+  namespace: app
+  name: app-app-service
 spec:
   selector:
-    app: FastAPI-super-template-app
+    app: app-app
   ports:
     - protocol: TCP
       port: 80
@@ -56,20 +58,20 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: FastAPI-super-template-app
-  namespace: FastAPI-super-template
+  name: app-app
+  namespace: app
   labels:
-    name: FastAPI-super-template-app
+    name: app-app
 spec:
   rules:
-    - host: FastAPI-super-template.local
+    - host: app.local
       http:
         paths:
           - pathType: Prefix
             path: "/"
             backend:
               service:
-                name: FastAPI-super-template-app-service
+                name: app-app-service
                 port:
                   name: api-port
 

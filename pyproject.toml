@@ -8,11 +8,15 @@ dependencies = [
     "aiofiles>=24.1.0",
     "aiokafka>=0.12.0",
     "alembic>=1.16.4",
+    "asyncpg[sa]>=0.30.0",
     "email-validator>=2.2.0",
     "emails>=0.6",
     "fastapi>=0.116.1",
+    "fastapi-users>=14.0.1",
+    "fastapi-users-db-sqlalchemy>=7.0.0",
     "gunicorn>=23.0.0",
     "httptools>=0.6.4",
+    "httpx-oauth>=0.16.1",
     "jinja2>=3.1.6",
     "loguru>=0.7.3",
     "opentelemetry-api>=1.36.0",
@@ -21,16 +25,19 @@ dependencies = [
     "opentelemetry-instrumentation-aio-pika>=0.57b0",
     "opentelemetry-instrumentation-fastapi>=0.57b0",
     "opentelemetry-instrumentation-redis>=0.57b0",
+    "opentelemetry-instrumentation-sqlalchemy>=0.57b0",
     "opentelemetry-sdk>=1.36.0",
     "passlib[bcrypt]>=1.7.4",
     "prometheus-client>=0.22.1",
     "prometheus-fastapi-instrumentator>=7.1.0",
     "psycopg[binary]>=3.2.9",
+    "pydantic>=2.11.7",
     "pydantic-settings>=2.10.1",
     "pyjwt>=2.10.1",
     "pymongo>=4.14.0",
     "redis[hiredis]>=6.4.0",
     "sentry-sdk>=2.34.1",
+    "sqlalchemy[asyncio]>=2.0.42",
     "taskiq>=0.11.18",
     "taskiq-aio-pika>=0.4.3",
     "taskiq-fastapi>=0.3.5",
@@ -79,6 +86,10 @@ lint.ignore = [
     "N815",
     "UP046",
 ]
+exclude = [
+    "app/db/migrations",
+    ".venv/"
+]
 target-version = "py313"
 line-length = 100
 
@@ -101,7 +112,6 @@ convention = "google"
 [tool.isort]
 profile = "black"
 multi_line_output = 3
-src_paths = ["src",]
 
 [tool.mypy]
 strict = true
@@ -131,7 +141,7 @@ filterwarnings = [
     "ignore:.*unclosed.*:ResourceWarning",
 ]
 env = [
-    "FASTAPI_SUPER_TEMPLATE_ENVIRONMENT=pytest",
-    "FASTAPI_SUPER_TEMPLATE_DB_BASE=FastAPI_super_template_test",
-    "FASTAPI_SUPER_TEMPLATE_SENTRY_DSN=",
+    "APP_ENVIRONMENT=pytest",
+    "APP_DB_BASE=app_test",
+    "APP_SENTRY_DSN=",
 ]

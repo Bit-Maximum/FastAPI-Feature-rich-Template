@@ -1,4 +1,4 @@
-# FastAPI_super_template
+# app
 
 This project was generated using fastapi_template.
 
@@ -11,7 +11,7 @@ To run the project use this set of commands:
 
 ```bash
 poetry install
-poetry run python -m src
+poetry run python -m app
 ```
 
 This will start the server on the configured host.
@@ -46,10 +46,13 @@ docker-compose build
 ## Project structure
 
 ```bash
-$ tree "FastAPI_super_template"
-src
+$ tree "app"
+app
 ├── conftest.py  # Fixtures for all tests.
-├── main.py  # Startup script. Starts uvicorn.
+├── db  # module contains db configurations
+│   ├── dao  # Data Access Objects. Contains different classes to interact with database.
+│   └── models  # Package contains different models for ORMs.
+├── __main__.py  # Startup script. Starts uvicorn.
 ├── services  # Package for different external services such as rabbit or redis etc.
 ├── settings.py  # Main configuration settings for project.
 ├── static  # Static content.
@@ -68,18 +71,18 @@ This application can be configured with environment variables.
 You can create `.env` file in the root directory and place all
 environment variables here.
 
-All environment variables should start with "FASTAPI_SUPER_TEMPLATE_" prefix.
+All environment variables should start with "APP_" prefix.
 
-For example if you see in your "FastAPI_super_template/settings.py" a variable named like
-`random_parameter`, you should provide the "FASTAPI_SUPER_TEMPLATE_RANDOM_PARAMETER"
+For example if you see in your "app/settings.py" a variable named like
+`random_parameter`, you should provide the "APP_RANDOM_PARAMETER"
 variable to configure the value. This behaviour can be changed by overriding `env_prefix` property
-in `FastAPI_super_template.settings.Settings.Config`.
+in `app.settings.Settings.Config`.
 
 An example of .env file:
 ```bash
-FASTAPI_SUPER_TEMPLATE_RELOAD="True"
-FASTAPI_SUPER_TEMPLATE_PORT="8000"
-FASTAPI_SUPER_TEMPLATE_ENVIRONMENT="dev"
+APP_RELOAD="True"
+APP_PORT="8000"
+APP_ENVIRONMENT="dev"
 ```
 
 You can read more about BaseSettings class here: https://pydantic-docs.helpmanual.io/usage/settings/
@@ -134,7 +137,40 @@ If you haven't pushed to docker registry yet, you can build image locally.
 
 ```bash
 docker-compose build
-docker save --output src.tar src:latest
+docker save --output app.tar app:latest
+```
+
+## Migrations
+
+If you want to migrate your database, you should run following commands:
+```bash
+# To run all migrations until the migration with revision_id.
+alembic upgrade "<revision_id>"
+
+# To perform all pending migrations.
+alembic upgrade "head"
+```
+
+### Reverting migrations
+
+If you want to revert migrations, you should run:
+```bash
+# revert all migrations up to: revision_id.
+alembic downgrade <revision_id>
+
+# Revert everything.
+ alembic downgrade base
+```
+
+### Migration generation
+
+To generate migrations you should run:
+```bash
+# For automatic change detection.
+alembic revision --autogenerate
+
+# For empty file generation.
+alembic revision
 ```
 
 
@@ -148,6 +184,12 @@ docker-compose down
 ```
 
 For running tests on your local machine.
+1. you need to start a database.
+
+I prefer doing it with docker:
+```
+docker run -p "5432:5432" -e "POSTGRES_PASSWORD=app" -e "POSTGRES_USER=app" -e "POSTGRES_DB=app" postgres:16.3-bullseye
+```
 
 
 2. Run the pytest.
