@@ -10,10 +10,6 @@ updates:
     labels:
       - dependencies
       - github-actions
-    pull-request-branch-name:
-      separator: "-"
-    open-pull-requests-limit: 5
-    automerge: true
 
   # Python uv
   - package-ecosystem: uv
@@ -36,10 +32,6 @@ updates:
     labels:
       - dependencies
       - docker
-    automerge: true
-    allow:
-      - dependency-type: "all"
-        update-types: [ "version-update:semver-minor", "version-update:semver-patch" ]
 
   # Docker Compose
   - package-ecosystem: docker-compose
@@ -51,7 +43,3 @@ updates:
     labels:
       - dependencies
       - docker-compose
-    automerge: true
-    allow:
-      - dependency-type: "all"
-        update-types: [ "version-update:semver-minor", "version-update:semver-patch" ]
