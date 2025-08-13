@@ -76,7 +76,7 @@ services:
         condition: service_healthy
 
   redis:
-    image: bitnami/redis:6.2.5
+    image: bitnami/redis:8.2.0
     hostname: "app-redis"
     restart: always
     environment:
