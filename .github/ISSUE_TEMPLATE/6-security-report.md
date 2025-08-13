@@ -28,9 +28,6 @@ sensible or private data as possible to help us manage the security issue, and
 with the extra data sent from your email to the developer (if any), we will deeply
 analyze and try to fix it as fast as possible.
 
-If you are in doubt about the data that you might post here (screenshots or media
-also, count as data), please directly email us.
-
 The data that must NOT be posted here:
 
 * Legal and/or full names
