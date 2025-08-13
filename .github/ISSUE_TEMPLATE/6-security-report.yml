@@ -1,0 +1,68 @@
+name: "⚠️ Security Report"
+description: "Report a security issue."
+title: "[Security] "
+labels: [Security]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ⚠️ Security Report
+
+        **Important:**
+        - First, read this project's [SECURITY.md](.github/SECURITY.md) file.
+        - Do **NOT** post sensitive or private data directly in this issue.
+        - For sensitive reports, email the developer directly.
+
+        The following data must **NOT** be posted here:
+        - Legal/full names
+        - Names or usernames combined with other identifiers like phone numbers or email addresses
+        - Health or financial information
+        - Political or religious affiliation
+        - Race, ethnicity, sexual orientation, gender, or other identifying information
+
+  - type: textarea
+    id: security-issue
+    attributes:
+      label: Describe the security issue
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce-steps
+    attributes:
+      label: To Reproduce
+      description: Steps to reproduce the issue.
+      placeholder: |
+        1.
+        2.
+        3.
+        4.
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      description: A clear and concise description of what you expected to happen.
+
+  - type: textarea
+    id: media
+    attributes:
+      label: Media proof
+      description: If applicable, add screenshots or videos to help explain your problem.
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Your environment
+      description: Provide relevant environment details.
+      placeholder: |
+        * OS: e.g. Ubuntu 5.4.0-26-generic x86_64 / Windows 1904
+        * Python version:
+        * Browser name and version:
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Add any other context or additional information about the problem here.

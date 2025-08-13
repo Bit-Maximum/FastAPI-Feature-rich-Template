@@ -1,0 +1,39 @@
+name: "💉 Failing Test"
+description: "Report failing tests or CI jobs."
+title: "[Test] "
+labels: [Test]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 💉 Failing Test
+
+        Please fill out the following details about the failing tests or CI jobs.
+
+  - type: textarea
+    id: failing-jobs
+    attributes:
+      label: Which jobs/test(s) are failing
+      description: The CI jobs or tests that are failing.
+      placeholder: |
+        e.g., test_login, build-and-test CI job...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: Reason for failure/description
+      description: Try to describe why the test is failing or what is missing to make it pass.
+
+  - type: textarea
+    id: media
+    attributes:
+      label: Media proof
+      description: If applicable, add screenshots or videos to help explain your problem.
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Add any other context or additional information about the problem here.
