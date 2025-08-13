@@ -46,7 +46,7 @@ services:
       - app.tkq:broker
 
   db:
-    image: postgres:16.3-bullseye
+    image: postgres:17.5-bullseye
     hostname: app-db
     environment:
       POSTGRES_PASSWORD: ""
