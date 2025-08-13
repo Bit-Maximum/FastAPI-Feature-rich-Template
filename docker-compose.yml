@@ -88,7 +88,7 @@ services:
       retries: 50
 
   rmq:
-    image: rabbitmq:3.9.16-alpine
+    image: rabbitmq:4.1.3-alpine
     hostname: "app-rmq"
     restart: always
     environment:
