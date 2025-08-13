@@ -9,7 +9,6 @@ updates:
       prefix: ⬆
     labels:
       - dependencies
-      - github-actions
 
   # Python uv
   - package-ecosystem: uv
@@ -20,7 +19,6 @@ updates:
       prefix: ⬆
     labels:
       - dependencies
-      - python
 
   # Docker
   - package-ecosystem: docker
@@ -31,7 +29,6 @@ updates:
       prefix: ⬆
     labels:
       - dependencies
-      - docker
 
   # Docker Compose
   - package-ecosystem: docker-compose
@@ -42,4 +39,3 @@ updates:
       prefix: ⬆
     labels:
       - dependencies
-      - docker-compose
