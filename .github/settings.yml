@@ -102,6 +102,10 @@ labels:
     color: 2fbceb
     description: An issue/change with the documentation.
 
+  - name: "Dependency"
+    color: 2fbceb
+    description: An issue/change with the project dependencies.
+
   - name: "Won't fix"
     color: C8D9E6
     description: Reported issue is working as intended.
