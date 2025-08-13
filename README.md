@@ -1,4 +1,4 @@
-# app
+# Work in progress | Breaking changes expected
 
 This project was generated using fastapi_template.
 
