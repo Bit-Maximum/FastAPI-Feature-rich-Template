@@ -102,7 +102,7 @@ services:
       retries: 50
 
   kafka:
-    image: bitnami/kafka:3.7.1-debian-12-r0
+    image: bitnami/kafka:3.9.0-debian-12-r0
     hostname: "app-kafka"
     environment:
       KAFKA_CFG_NODE_ID: "0"
