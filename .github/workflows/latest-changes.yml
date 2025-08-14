@@ -28,10 +28,10 @@ jobs:
         run: echo "$GITHUB_CONTEXT"
       - uses: actions/checkout@v5
         with:
-          token: ${{ secrets.PROJECTS_TOKEN }}
+          token: ${{ secrets.REPO_TOKEN }}
       - uses: tiangolo/latest-changes@0.4.0
         with:
-          token: ${{ secrets.PROJECTS_TOKEN }}
+          token: ${{ secrets.REPO_TOKEN }}
           latest_changes_file: docs/release-notes.md
           latest_changes_header: '# Release Notes'
           end_regex: "^## "
