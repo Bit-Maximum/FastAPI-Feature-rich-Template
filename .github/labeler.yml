@@ -38,3 +38,9 @@ docker:
 
 kubernetes:
   - "deploy/kube/**"
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file: ''
+    authors:
+      - "dependabot[bot]"
