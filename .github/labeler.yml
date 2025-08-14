@@ -1,0 +1,40 @@
+documentation:
+  - all:
+    - changed-files:
+      - any-glob-to-any-file:
+        - '**/*.md'
+      - all-globs-to-all-files:
+        - '!app/**'
+        - '!.github/**'
+        - '!scripts/**'
+        - '!.gitignore'
+        - '!.pre-commit-config.yaml'
+
+ci/cd:
+  - all:
+    - changed-files:
+      - any-glob-to-any-file:
+        - ".github/**"
+        - "scripts/**"
+        - ".gitignore"
+        - ".pre-commit-config.yaml"
+        - ".gitlab-ci.yml"
+        - "alembic.ini"
+      - all-globs-to-all-files:
+        - '!./**/*.md'
+        - '!app/**'
+
+backend:
+  - "app/**"
+
+tests:
+  - "tests/**"
+
+docker:
+  - "deploy/**"
+  - "!deploy/kube/**"
+  - "Dockerfile"
+  - "docker-compose.yml"
+
+kubernetes:
+  - "deploy/kube/**"
