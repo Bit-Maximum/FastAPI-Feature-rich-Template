@@ -27,6 +27,8 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
       - uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.PROJECTS_TOKEN }}
       - uses: tiangolo/latest-changes@0.4.0
         with:
           token: ${{ secrets.PROJECTS_TOKEN }}
