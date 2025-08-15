@@ -3,7 +3,7 @@ stages:
 
 .test-template:
   stage: test
-  image: python:3.11.4-slim-bullseye
+  image: python:3.13.5-slim-bullseye
   tags:
     - kubernetes-runner
     - docker-runner
@@ -11,9 +11,8 @@ stages:
     - tags
   before_script:
     - apt update && apt install -y git
-    - pip install poetry==1.8.2
-    - poetry config virtualenvs.create false
-    - poetry install
+    - pip install uv
+    - uv sync --locked
 
 ruff:
   extends:
