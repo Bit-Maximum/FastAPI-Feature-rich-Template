@@ -1,8 +1,10 @@
 services:
   api: &main_app
+    hostname: ${API_CONTAINER_HOST?Variable not set}
     build:
       context: .
       dockerfile: ./Dockerfile
+      target: prod
     image: app:${APP_VERSION:-latest}
     restart: always
     env_file:
@@ -10,13 +12,24 @@ services:
     labels:
       # Enables traefik for this container.
       - traefik.enable=true
-      - traefik.http.routers.app.rule=Host(`${APP_TRAEFIK_HOST:-app.localhost}`)
-      - traefik.http.routers.app.entrypoints=http
-      - traefik.http.routers.app.service=app
-      - traefik.http.services.app.loadbalancer.server.port=${APP_PORT:-8000}
+      - traefik.docker.network=traefik-public
+      - traefik.constraint-label=traefik-public
+
+      - traefik.http.services.${STACK_NAME?Variable not set}-api.loadbalancer.server.port=8000
+
+      - traefik.http.routers.${STACK_NAME?Variable not set}-api-http.rule=Host(`api.${DOMAIN?Variable not set}`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-api-http.entrypoints=http
+
+      - traefik.http.routers.${STACK_NAME?Variable not set}-api-https.rule=Host(`api.${DOMAIN?Variable not set}`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-api-https.entrypoints=https
+      - traefik.http.routers.${STACK_NAME?Variable not set}-api-https.tls=true
+      - traefik.http.routers.${STACK_NAME?Variable not set}-api-https.tls.certresolver=le
+
+      # Enable redirection for HTTP and HTTPS
+      - traefik.http.routers.${STACK_NAME?Variable not set}-api-http.middlewares=https-redirect
     networks:
+      - traefik-public
       - default
-      - traefik-shared
     depends_on:
       db:
         condition: service_healthy
@@ -27,18 +40,15 @@ services:
       kafka:
         condition: service_healthy
     environment:
-      APP_HOST: 0.0.0.0
-      APP_DB_HOST: app-db
-      APP_DB_PORT: 5432
-      APP_DB_USER: app
-      APP_DB_PASS: app
-      APP_DB_BASE: app
-      APP_RABBIT_HOST: app-rmq
-      APP_REDIS_HOST: app-redis
-      TESTKAFKA_KAFKA_BOOTSTRAP_SERVERS: '["app-kafka:9092"]'
+      APP_HOST: ${APP_HOST?Variable not set}
+      APP_DB_HOST: ${DB_CONTAINER_HOST?Variable not set}
+      APP_RABBIT_HOST: ${RABBITMQ_CONTAINER_HOST?Variable not set}
+      APP_REDIS_HOST: ${REDIS_CONTAINER_HOST?Variable not set}
+      TESTKAFKA_KAFKA_BOOTSTRAP_SERVERS: '["${KAFKA_CONTAINER_HOST?Variable not set}:${KAFKA_CFG_HEALTHCHECK_PORT?Variable not set}"]'
 
   taskiq-worker:
     <<: *main_app
+    hostname: ${API_TASKIQ_CONTAINER_HOST?Variable not set}
     labels: []
     command:
       - taskiq
@@ -46,90 +56,136 @@ services:
       - app.tkq:broker
 
   db:
-    image: postgres:17.5-bullseye
-    hostname: app-db
+    image: postgres:17.5-bookworm
+    hostname: ${DB_CONTAINER_HOST?Variable not set}
     environment:
-      POSTGRES_PASSWORD: ""
-      POSTGRES_USER: "app"
-      POSTGRES_DB: "app"
+      PGDATA: ${DB_DATAPATH?Variable not set}
+      POSTGRES_USER: ${DB_USER?Variable not set}
+      POSTGRES_PASSWORD: ${DB_PASSWORD?Variable not set}
+      POSTGRES_DB: ${DB_NAME?Variable not set}
     volumes:
-      - app-db-data:/var/lib/postgresql/data
+      - app-db-data:${DB_DATAPATH?Variable not set}
+    env_file:
+      - .env
     restart: always
     healthcheck:
-      test: pg_isready -U app
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 2s
-      timeout: 3s
-      retries: 40
+      timeout: 5s
+      retries: 10
+
+  adminer:
+    image: adminer:5.3.0
+    restart: always
+    networks:
+      - traefik-public
+      - default
+    depends_on:
+      - db
+    environment:
+      - ADMINER_DESIGN=ichier
+    labels:
+      # Enables traefik for this container.
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.constraint-label=traefik-public
+
+      - traefik.http.services.${STACK_NAME?Variable not set}-adminer.loadbalancer.server.port=8080
+
+      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-http.rule=Host(`adminer.${DOMAIN?Variable not set}`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-http.entrypoints=http
+
+      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-https.rule=Host(`adminer.${DOMAIN?Variable not set}`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-https.entrypoints=https
+      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-https.tls=true
+      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-https.tls.certresolver=le
+
+      # Enable redirection for HTTP and HTTPS
+      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-http.middlewares=https-redirect
 
   migrator:
     image: app:${APP_VERSION:-latest}
-    restart: "no"
+    restart: no
     command: alembic upgrade head
-    environment:
-      APP_DB_HOST: app-db
-      APP_DB_PORT: 5432
-      APP_DB_USER: app
-      APP_DB_PASS: app
-      APP_DB_BASE: app
+    env_file:
+      - .env
     depends_on:
       db:
         condition: service_healthy
 
   redis:
     image: bitnami/redis:8.2.0
-    hostname: "app-redis"
+    hostname: ${REDIS_CONTAINER_HOST?Variable not set}
     restart: always
     environment:
-      ALLOW_EMPTY_PASSWORD: "yes"
+      REDIS_DATABASE: ${REDIS_DATABASE?Variable not set}
+      REDIS_MASTER_HOST: ${REDIS_MASTER_HOST?Variable not set}
+      REDIS_PASSWORD: ${REDIS_PASSWORD?Variable not set}
+      REDIS_MASTER_PASSWORD: ${REDIS_MASTER_PASSWORD?Variable not set}
+    env_file:
+      - .env
+    volumes:
+      - redis-data:/bitnami/redis/data
     healthcheck:
       test: redis-cli ping
-      interval: 1s
+      interval: 2s
       timeout: 3s
-      retries: 50
+      retries: 20
 
   rmq:
     image: rabbitmq:4.1.3-alpine
-    hostname: "app-rmq"
+    hostname: ${RABBITMQ_CONTAINER_HOST?Variable not set}
     restart: always
     environment:
-      RABBITMQ_DEFAULT_USER: "guest"
-      RABBITMQ_DEFAULT_PASS: ""
-      RABBITMQ_DEFAULT_VHOST: "/"
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER?Variable not set}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS?Variable not set}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST?Variable not set}
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648" # 2Gb
+    env_file:
+      - .env
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
     healthcheck:
       test: rabbitmq-diagnostics check_running -q
-      interval: 3s
+      interval: 2s
       timeout: 3s
-      retries: 50
+      retries: 20
 
   kafka:
-    image: bitnami/kafka:3.9.0-debian-12-r0
-    hostname: "app-kafka"
+    image: bitnami/kafka:4.0.0-debian-12-r10
+    hostname: ${KAFKA_CONTAINER_HOST?Variable not set}
     environment:
-      KAFKA_CFG_NODE_ID: "0"
-      KAFKA_CFG_PROCESS_ROLES: "controller,broker"
-      KAFKA_CFG_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094"
-      KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094"
-      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT"
-      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "0@app-kafka:9093"
-      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
-      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
-    # Uncomment it to connect from localhost.
-    # ports:
-    #   - 9094:9094
+      KAFKA_CFG_NODE_ID: ${KAFKA_CFG_NODE_ID?Variable not set}
+      KAFKA_CFG_PROCESS_ROLES: ${KAFKA_CFG_PROCESS_ROLES?Variable not set}
+      KAFKA_CFG_LISTENERS: ${KAFKA_CFG_LISTENERS?Variable not set}
+      KAFKA_CFG_ADVERTISED_LISTENERS: ${KAFKA_CFG_ADVERTISED_LISTENERS?Variable not set}
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: ${KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP?Variable not set}
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: ${KAFKA_CFG_CONTROLLER_QUORUM_VOTERS?Variable not set}
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: ${KAFKA_CFG_CONTROLLER_LISTENER_NAMES?Variable not set}
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: ${KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE?Variable not set}
+      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: ${KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR?Variable not set}
+    env_file:
+      - .env
+    volumes:
+      - kafka-data:/bitnami/kafka
     healthcheck:
-      test: kafka-topics.sh --list --bootstrap-server localhost:9092
-      interval: 1s
+      test: kafka-topics.sh --list --bootstrap-server localhost:${KAFKA_CFG_HEALTHCHECK_PORT}
+      interval: 2s
       timeout: 3s
-      retries: 30
-
+      retries: 20
 
 
 volumes:
   app-db-data:
     name: app-db-data
-
+  redis-data:
+    name: redis-data
+  rabbitmq-data:
+    name: rabbitmq-data
+  kafka-data:
+    name: kafka-data
 networks:
   # Network for traefik.
-  traefik-shared:
-    name: traefik-shared
+  traefik-public:
+    # Allow setting it to false for testing
+    external: true
