@@ -24,7 +24,7 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 10
           env:
-            - name: APP_HOST
+            - name: HOST
               value: "0.0.0.0"
             - name: APP_WORKERS_COUNT
               value: "10"

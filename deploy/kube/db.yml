@@ -63,7 +63,7 @@ spec:
             memory: "200Mi"
             cpu: "250m"
         env:
-          - name: "APP_DB_HOST"
+          - name: "DB_HOST"
             value: "app-db-service"
       initContainers:
         - name: wait-for-db
