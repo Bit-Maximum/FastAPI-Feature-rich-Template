@@ -26,4 +26,4 @@ jobs:
           stale-issue-label: 'stale'
           stale-pr-label: 'stale'
           operations-per-run: 30
-          repo-token: ${{ secrets.PROJECTS_TOKEN }}
+          repo-token: ${{ secrets.REPO_TOKEN }}
