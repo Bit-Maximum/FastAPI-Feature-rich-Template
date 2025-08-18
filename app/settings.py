@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 from tempfile import gettempdir
 
+from pydantic import computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from yarl import URL
 
@@ -131,6 +132,20 @@ class Settings(BaseSettings):
             password=self.rabbit_pass,
             path=self.rabbit_vhost,
         )
+
+    @computed_field
+    @property
+    def all_cors_origins(self) -> list[str]:
+        """
+        Combine backend and frontend CORS origins into a single list.
+
+        Strips trailing slashes from backend origins and includes the frontend host.
+
+        :return: List of allowed CORS origin strings.
+        """
+        return [str(origin).rstrip("/") for origin in self.BACKEND_CORS_ORIGINS] + [
+            self.FRONTEND_HOST
+        ]
 
     model_config = SettingsConfigDict(
         env_file=".env",
