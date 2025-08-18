@@ -1,12 +1,12 @@
 from fastapi import APIRouter
 
 from app.db.models.users import (
-    UserCreate,  # type: ignore
-    UserRead,  # type: ignore
-    UserUpdate,  # type: ignore
-    api_users,  # type: ignore
-    auth_cookie,  # type: ignore
-    auth_jwt,  # type: ignore
+    UserCreate,
+    UserRead,
+    UserUpdate,
+    api_users,
+    auth_cookie,
+    auth_jwt,
 )
 
 router = APIRouter()
