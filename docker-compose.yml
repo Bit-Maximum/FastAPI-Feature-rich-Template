@@ -56,7 +56,7 @@ services:
       - app.tkq:broker
 
   db:
-    image: postgres:17.5-bookworm
+    image: postgres:17.6-bookworm
     hostname: ${DB_CONTAINER_HOST?Variable not set}
     environment:
       PGDATA: ${DB_DATAPATH?Variable not set}
