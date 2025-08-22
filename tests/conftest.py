@@ -19,6 +19,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from app.core.config import settings
 from app.db.dependencies import get_db_session
 from app.db.meta import meta
 from app.db.models import load_all_models
@@ -28,7 +29,6 @@ from app.services.kafka.lifespan import init_kafka, shutdown_kafka
 from app.services.rabbit.dependencies import get_rmq_channel_pool
 from app.services.rabbit.lifespan import init_rabbit, shutdown_rabbit
 from app.services.redis.dependency import get_redis_pool
-from app.settings import settings
 from app.web.application import get_app
 
 

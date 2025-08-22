@@ -21,10 +21,10 @@ from prometheus_fastapi_instrumentator.instrumentation import (
 )
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
+from app.core.config import settings
 from app.services.kafka.lifespan import init_kafka, shutdown_kafka
 from app.services.rabbit.lifespan import init_rabbit, shutdown_rabbit
 from app.services.redis.lifespan import init_redis, shutdown_redis
-from app.settings import settings
 from app.tkq import broker
 
 
@@ -38,7 +38,7 @@ def _setup_db(app: FastAPI) -> None:  # pragma: no cover
 
     :param app: fastAPI application.
     """
-    engine = create_async_engine(str(settings.db_url), echo=settings.db_echo)
+    engine = create_async_engine(str(settings.db_url), echo=settings.DB_ECHO)
     session_factory = async_sessionmaker(
         engine,
         expire_on_commit=False,
@@ -53,7 +53,7 @@ def setup_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
 
     :param app: current application.
     """
-    if not settings.opentelemetry_endpoint:
+    if not settings.OPENTELEMETRY_ENDPOINT:
         return
 
     tracer_provider = TracerProvider(
@@ -69,7 +69,7 @@ def setup_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
     tracer_provider.add_span_processor(
         BatchSpanProcessor(
             OTLPSpanExporter(
-                endpoint=settings.opentelemetry_endpoint,
+                endpoint=settings.OPENTELEMETRY_ENDPOINT,
                 insecure=True,
             ),
         ),
@@ -109,7 +109,7 @@ def stop_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
 
     :param app: current application.
     """
-    if not settings.opentelemetry_endpoint:
+    if not settings.OPENTELEMETRY_ENDPOINT:
         return
 
     FastAPIInstrumentor().uninstrument_app(app)

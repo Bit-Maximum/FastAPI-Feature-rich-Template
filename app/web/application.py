@@ -3,16 +3,17 @@ from pathlib import Path
 
 import sentry_sdk
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import ORJSONResponse
 from fastapi.routing import APIRoute
 from fastapi.staticfiles import StaticFiles
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
-from starlette.middleware.cors import CORSMiddleware
 
+from app.core.config import settings
 from app.log import configure_logging
-from app.settings import settings
 from app.web.api.router import api_router
 from app.web.lifespan import lifespan_setup
 
@@ -74,22 +75,23 @@ def get_app() -> FastAPI:
         generate_unique_id_function=custom_generate_unique_id,
     )
 
-    # Set all CORS enabled origins
-    if settings.all_cors_origins:
-        app.add_middleware(
-            CORSMiddleware,
-            allow_origins=settings.all_cors_origins,
-            allow_credentials=True,
-            allow_methods=["*"],
-            allow_headers=["*"],
-        )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[str(origin) for origin in settings.CORS_ORIGINS],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["X-Requested-With", "X-Request-ID", "Content-Type"],
+        expose_headers=["X-Request-ID"],
+    )
+
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.ALLOWED_HOSTS)
 
     # Main router for the API.
     app.include_router(router=api_router, prefix=settings.API_BASE_PATH)
     # Adds static directory.
     # This directory is used to access swagger files.
     app.mount(
-        f"/{settings.API_BASE_PATH}",
+        f"{settings.API_BASE_PATH}",
         StaticFiles(directory=APP_ROOT / f"{settings.API_BASE_PATH}"),
         name="static",
     )

@@ -5,7 +5,7 @@ from taskiq import AsyncBroker, AsyncResultBackend, InMemoryBroker
 from taskiq_aio_pika import AioPikaBroker
 from taskiq_redis import RedisAsyncResultBackend
 
-from app.settings import settings
+from app.core.config import settings
 
 result_backend: AsyncResultBackend[Any] = RedisAsyncResultBackend(
     redis_url=str(settings.redis_url.with_path("/1")),

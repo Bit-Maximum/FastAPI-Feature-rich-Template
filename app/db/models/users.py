@@ -12,9 +12,9 @@ from fastapi_users.authentication import (
 from fastapi_users.db import SQLAlchemyBaseUserTableUUID, SQLAlchemyUserDatabase
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.db.base import Base
 from app.db.dependencies import get_db_session
-from app.settings import settings
 
 
 class User(SQLAlchemyBaseUserTableUUID, Base):
@@ -36,8 +36,8 @@ class UserUpdate(schemas.BaseUserUpdate):
 class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     """Manages a user session and its tokens."""
 
-    reset_password_token_secret = settings.users_secret
-    verification_token_secret = settings.users_secret
+    reset_password_token_secret = settings.USERS_SECRET
+    verification_token_secret = settings.USERS_SECRET
 
 
 async def get_user_db(
@@ -70,7 +70,7 @@ def get_jwt_strategy() -> JWTStrategy:
 
     :returns: instance of JWTStrategy with provided settings.
     """
-    return JWTStrategy(secret=settings.users_secret, lifetime_seconds=None)
+    return JWTStrategy(secret=settings.USERS_SECRET, lifetime_seconds=None)
 
 
 bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")

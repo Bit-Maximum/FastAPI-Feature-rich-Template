@@ -5,7 +5,7 @@ from typing import Any
 from loguru import logger
 from opentelemetry.trace import INVALID_SPAN, INVALID_SPAN_CONTEXT, get_current_span
 
-from app.settings import settings
+from app.core.config import settings
 
 
 class InterceptHandler(logging.Handler):
@@ -96,6 +96,6 @@ def configure_logging() -> None:  # pragma: no cover
     logger.remove()
     logger.add(
         sys.stdout,
-        level=settings.log_level.value,
+        level=settings.LOG_LEVEL.value,
         format=record_formatter,
     )

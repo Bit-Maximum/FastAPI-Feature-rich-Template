@@ -1,7 +1,7 @@
 from aiokafka import AIOKafkaProducer
 from fastapi import FastAPI
 
-from app.settings import settings
+from app.core.config import settings
 
 
 async def init_kafka(app: FastAPI) -> None:  # pragma: no cover
