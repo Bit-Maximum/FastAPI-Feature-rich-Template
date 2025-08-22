@@ -40,11 +40,10 @@ services:
       kafka:
         condition: service_healthy
     environment:
-      APP_HOST: ${APP_HOST?Variable not set}
-      APP_DB_HOST: ${DB_CONTAINER_HOST?Variable not set}
-      APP_RABBIT_HOST: ${RABBITMQ_CONTAINER_HOST?Variable not set}
-      APP_REDIS_HOST: ${REDIS_CONTAINER_HOST?Variable not set}
-      TESTKAFKA_KAFKA_BOOTSTRAP_SERVERS: '["${KAFKA_CONTAINER_HOST?Variable not set}:${KAFKA_CFG_HEALTHCHECK_PORT?Variable not set}"]'
+      DB_HOST: ${DB_CONTAINER_HOST?Variable not set}
+      REDIS_HOST: ${RABBITMQ_CONTAINER_HOST?Variable not set}
+      RABBIT_HOST: ${REDIS_CONTAINER_HOST?Variable not set}
+      KAFKA_BOOTSTRAP_SERVERS: '["${KAFKA_CONTAINER_HOST?Variable not set}:${KAFKA_CFG_HEALTHCHECK_PORT?Variable not set}"]'
 
   taskiq-worker:
     <<: *main_app
@@ -120,8 +119,9 @@ services:
     environment:
       REDIS_DATABASE: ${REDIS_DATABASE?Variable not set}
       REDIS_MASTER_HOST: ${REDIS_MASTER_HOST?Variable not set}
-      REDIS_PASSWORD: ${REDIS_PASSWORD?Variable not set}
+      REDIS_PASSWORD: ${REDIS_PASS?Variable not set}
       REDIS_MASTER_PASSWORD: ${REDIS_MASTER_PASSWORD?Variable not set}
+      REDIS_USER: ${REDIS_USER?Variable not set}
     env_file:
       - .env
     volumes:
@@ -137,9 +137,9 @@ services:
     hostname: ${RABBITMQ_CONTAINER_HOST?Variable not set}
     restart: always
     environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER?Variable not set}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS?Variable not set}
-      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST?Variable not set}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER?Variable not set}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS?Variable not set}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST?Variable not set}
       RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648" # 2Gb
     env_file:
       - .env
@@ -164,6 +164,8 @@ services:
       KAFKA_CFG_CONTROLLER_LISTENER_NAMES: ${KAFKA_CFG_CONTROLLER_LISTENER_NAMES?Variable not set}
       KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: ${KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE?Variable not set}
       KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: ${KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR?Variable not set}
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://${OTEL_COLLECTOR_HOST}:${OTEL_COLLECTOR_PORT_HTTP}
+      OTEL_SERVICE_NAME: ${KAFKA_CONTAINER_HOST?Variable not set}
     env_file:
       - .env
     volumes:

@@ -4,7 +4,7 @@ services:
       # Exposes application port.
     - "8000:8000"
     build:
-      context: .
+      context: ..
     volumes:
       # Adds current directory as volume.
     - .:/app/src/
