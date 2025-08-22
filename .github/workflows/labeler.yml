@@ -30,4 +30,4 @@ jobs:
       - uses: docker://agilepathway/pull-request-label-checker:latest
         with:
           one_of: bug,dependencies,documentation,enhancement,question,backend,ci/cd,docker,frontend,kubernetes,performance,refactoring,tests
-          repo_token: ${{ secrets.PROJECTS_TOKEN }}
+          repo_token: ${{ secrets.REPO_TOKEN }}

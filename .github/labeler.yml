@@ -25,22 +25,36 @@ ci/cd:
         - '!app/**'
 
 backend:
-  - "app/**"
+  - all:
+    - changed-files:
+      - any-glob-to-any-file:
+        - "app/**"
 
 tests:
-  - "tests/**"
+  - all:
+    - changed-files:
+      - any-glob-to-any-file:
+        - "tests/**"
 
 docker:
-  - "deploy/**"
-  - "!deploy/kube/**"
-  - "Dockerfile"
-  - "docker-compose.yml"
+  - all:
+    - changed-files:
+      - any-glob-to-any-file:
+        - "deploy/**"
+        - "!deploy/kube/**"
+        - "Dockerfile"
+        - "docker-compose.yml"
 
 kubernetes:
-  - "deploy/kube/**"
+  - all:
+    - changed-files:
+      - any-glob-to-any-file:
+        - "deploy/kube/**"
 
 dependencies:
-  - changed-files:
-      - any-glob-to-any-file: ''
-    authors:
-      - "dependabot[bot]"
+  - all:
+    - changed-files:
+      - any-glob-to-any-file:
+        - ''
+      authors:
+        - "dependabot[bot]"
