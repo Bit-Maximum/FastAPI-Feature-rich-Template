@@ -67,8 +67,8 @@ class Settings(BaseSettings):
     ENVIRONMENT: Literal["local", "pytest", "staging", "production"] = "local"
     ## CORS_ORIGINS and ALLOWED_HOSTS are a JSON-formatted list of origins
     ## For example: ["http://localhost:4200", "https://myfrontendapp.com"]
-    CORS_ORIGINS: list[str] = []
     ALLOWED_HOSTS: list[str] = ["localhost", "127.0.0.1"]
+    CORS_ORIGINS: list[str] = ["localhost", "127.0.0.1"]
     APP_LOG_FILE_PATH: str = "logs/app.log"
     API_BASE_PATH: str = "/api"
 
