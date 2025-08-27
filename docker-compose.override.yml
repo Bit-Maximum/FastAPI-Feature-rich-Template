@@ -52,7 +52,7 @@ services:
   adminer:
     restart: "no"
     ports:
-      - "8080:8080"
+      - "5080:5080"
 
   api:
     restart: "no"
@@ -69,11 +69,6 @@ services:
             - .venv
         - path: ./pyproject.toml
           action: rebuild
-    volumes:
-      - # Adds current directory as volume.
-      - .:/app/src/
-      # TODO: remove once coverage is done locally
-      - ./app/htmlcov:/app/htmlcov
     environment:
       SMTP_HOST: "mailcatcher"
       SMTP_PORT: "1025"

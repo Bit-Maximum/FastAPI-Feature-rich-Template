@@ -28,12 +28,12 @@ RUN apt-get update \
 # ===== Prod stage =====
 FROM base AS prod
 
-COPY pyproject.toml uv.lock ./
+COPY pyproject.toml uv.lock alembic.ini ./
 
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev
 
-COPY ./app ./$APP_HOME
+COPY ./app .$APP_HOME
 
 CMD ["python", "-m", "app"]
 
