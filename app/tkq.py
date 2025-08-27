@@ -14,7 +14,7 @@ broker: AsyncBroker = AioPikaBroker(
     str(settings.rabbit_url),
 ).with_result_backend(result_backend)
 
-if settings.environment.lower() == "pytest":
+if settings.ENVIRONMENT.lower() == "pytest":
     broker = InMemoryBroker()
 
 taskiq_fastapi.init(

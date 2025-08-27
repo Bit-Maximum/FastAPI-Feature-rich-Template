@@ -55,9 +55,7 @@ class Settings(BaseSettings):
 
     # Configuration for the settings class
     model_config = SettingsConfigDict(
-        env_file=".env",
-        env_prefix="",
-        env_file_encoding="utf-8",
+        env_file=".env", env_prefix="", env_file_encoding="utf-8", extra="ignore"
     )
 
     # CORE SETTINGS
@@ -67,10 +65,30 @@ class Settings(BaseSettings):
     ENVIRONMENT: Literal["local", "pytest", "staging", "production"] = "local"
     ## CORS_ORIGINS and ALLOWED_HOSTS are a JSON-formatted list of origins
     ## For example: ["http://localhost:4200", "https://myfrontendapp.com"]
-    ALLOWED_HOSTS: list[str] = ["localhost", "127.0.0.1"]
+    ALLOWED_HOSTS: list[str] = ["localhost", "127.0.0.1", "api.localhost"]
     CORS_ORIGINS: list[str] = ["localhost", "127.0.0.1"]
+
     APP_LOG_FILE_PATH: str = "logs/app.log"
     API_BASE_PATH: str = "/api"
+    APP_VERSION: str = "latest"
+    APP_HOST: str = "0.0.0.0"
+
+    # Docker services` hosts
+    API_CONTAINER_HOST: str = "app-api"
+    API_TASKIQ_CONTAINER_HOST: str = "api-taskiq"
+    DB_CONTAINER_HOST: str = "app-db"
+    REDIS_CONTAINER_HOST: str = "app-redis"
+    RABBITMQ_CONTAINER_HOST: str = "app-rmq"
+    KAFKA_CONTAINER_HOST: str = "app-kafka"
+
+    # Emails
+    SMTP_HOST: str | None = None
+    SMTP_USER: str | None = None
+    SMTP_PASSWORD: str | None = None
+    EMAILS_FROM_EMAIL: str | None = None
+    SMTP_TLS: bool = True
+    SMTP_SSL: bool = False
+    SMTP_PORT: int = 587
 
     # Uvicorn
     UVICORN_HOST: str = "127.0.0.1"
@@ -108,16 +126,16 @@ class Settings(BaseSettings):
     REDIS_PORT: int = 6379
     REDIS_USER: str | None = None
     REDIS_PASS: str | None = None
-    REDIS_DATABASE: int | None = None
+    REDIS_DATABASE: str | None = None
 
     # Variables for RabbitMQ
-    RABBIT_HOST: str = "app-rmq"  # The name of the service in the docker-compose file
-    RABBIT_PORT: int = 5672
-    RABBIT_USER: str = "guest"
-    RABBIT_PASS: str = ""
-    RABBIT_VHOST: str = "/"
-    RABBIT_POOL_SIZE: int = 2
-    RABBIT_CHANNEL_POOL_SIZE: int = 10
+    RABBITMQ_HOST: str = "app-rmq"  # The name of the service in the docker-compose file
+    RABBITMQ_PORT: int = 5672
+    RABBITMQ_USER: str = "guest"
+    RABBITMQ_PASS: str = ""
+    RABBITMQ_VHOST: str = "/"
+    RABBITMQ_POOL_SIZE: int = 2
+    RABBITMQ_CHANNEL_POOL_SIZE: int = 10
 
     # This variable is used to define
     # multiproc_dir. It's required for [uvi|guni]corn projects.
@@ -131,7 +149,7 @@ class Settings(BaseSettings):
 
     # Grpc endpoint for opentelemetry.
     # E.G. http://localhost:4317
-    OTEL_ENDPOINT: str | None = None
+    OPENTELEMETRY_ENDPOINT: str | None = None
 
     KAFKA_ADDR: list[str] = ["app-kafka:9092"]
 
@@ -187,11 +205,11 @@ class Settings(BaseSettings):
         """
         return URL.build(
             scheme="amqp",
-            host=self.RABBIT_HOST,
-            port=self.RABBIT_PORT,
-            user=self.RABBIT_USER,
-            password=self.RABBIT_PASS,
-            path=self.RABBIT_VHOST,
+            host=self.RABBITMQ_HOST,
+            port=self.RABBITMQ_PORT,
+            user=self.RABBITMQ_USER,
+            password=self.RABBITMQ_PASS,
+            path=self.RABBITMQ_VHOST,
         )
 
 

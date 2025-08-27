@@ -22,13 +22,13 @@ def set_multiproc_dir() -> None:
     so I've decided to export all needed variables,
     to avoid undefined behaviour.
     """
-    shutil.rmtree(settings.PROMETHEUS_DIR, ignore_errors=True)
-    Path(settings.PROMETHEUS_DIR).mkdir(parents=True)
+    shutil.rmtree(settings.PROMETHEUS_MULTIPROC_DIR, ignore_errors=True)
+    Path(settings.PROMETHEUS_MULTIPROC_DIR).mkdir(parents=True)
     os.environ["prometheus_multiproc_dir"] = str(  # noqa: SIM112
-        settings.PROMETHEUS_DIR.expanduser().absolute(),
+        settings.PROMETHEUS_MULTIPROC_DIR.expanduser().absolute(),
     )
     os.environ["PROMETHEUS_MULTIPROC_DIR"] = str(
-        settings.PROMETHEUS_DIR.expanduser().absolute(),
+        settings.PROMETHEUS_MULTIPROC_DIR.expanduser().absolute(),
     )
 
 

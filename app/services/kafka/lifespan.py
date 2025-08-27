@@ -20,7 +20,7 @@ async def init_kafka(app: FastAPI) -> None:  # pragma: no cover
     :param app: current application.
     """
     app.state.kafka_producer = AIOKafkaProducer(
-        bootstrap_servers=settings.kafka_bootstrap_servers,
+        bootstrap_servers=settings.KAFKA_ADDR,
     )
     await app.state.kafka_producer.start()
 

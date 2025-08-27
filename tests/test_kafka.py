@@ -29,7 +29,7 @@ async def test_message_publishing(
     message = uuid.uuid4().hex
     consumer = AIOKafkaConsumer(
         topic_name,
-        bootstrap_servers=settings.kafka_bootstrap_servers,
+        bootstrap_servers=settings.KAFKA_ADDR,
     )
     await consumer.start()
     url = fastapi_app.url_path_for("send_kafka_message")

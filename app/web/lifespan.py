@@ -61,7 +61,7 @@ def setup_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
             attributes={
                 SERVICE_NAME: "app",
                 TELEMETRY_SDK_LANGUAGE: "python",
-                DEPLOYMENT_ENVIRONMENT: settings.environment,
+                DEPLOYMENT_ENVIRONMENT: settings.ENVIRONMENT,
             },
         ),
     )

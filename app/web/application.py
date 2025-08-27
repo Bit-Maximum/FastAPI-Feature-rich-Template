@@ -6,7 +6,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import ORJSONResponse
-from fastapi.routing import APIRoute
 from fastapi.staticfiles import StaticFiles
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
@@ -18,16 +17,6 @@ from app.web.api.router import api_router
 from app.web.lifespan import lifespan_setup
 
 APP_ROOT = Path(__file__).parent.parent
-
-
-def custom_generate_unique_id(route: APIRoute) -> str:
-    """
-    Generate a unique operation ID for FastAPI routes based on their tag and name.
-
-    :param route: The APIRoute instance to generate the ID for.
-    :return: Unique string combining the route's tag and name.
-    """
-    return f"{route.tags[0]}-{route.name}"
 
 
 def get_app() -> FastAPI:
@@ -68,11 +57,10 @@ def get_app() -> FastAPI:
             "email": settings.CONTACT_EMAIL,
         },
         lifespan=lifespan_setup,
-        docs_url=f"{settings.API_BASE_PATH}/swagger",
+        docs_url=f"{settings.API_BASE_PATH}/docs",
         redoc_url=f"{settings.API_BASE_PATH}/redoc",
         openapi_url=f"{settings.API_BASE_PATH}/openapi.json",
         default_response_class=ORJSONResponse,
-        generate_unique_id_function=custom_generate_unique_id,
     )
 
     app.add_middleware(
@@ -88,11 +76,12 @@ def get_app() -> FastAPI:
 
     # Main router for the API.
     app.include_router(router=api_router, prefix=settings.API_BASE_PATH)
+
     # Adds static directory.
     # This directory is used to access swagger files.
     app.mount(
         f"{settings.API_BASE_PATH}",
-        StaticFiles(directory=APP_ROOT / f"{settings.API_BASE_PATH}"),
+        StaticFiles(directory=APP_ROOT / "static"),
         name="static",
     )
 
