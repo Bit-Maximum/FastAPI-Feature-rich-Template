@@ -61,6 +61,7 @@ class Settings(BaseSettings):
     # CORE SETTINGS
     SECRET_KEY: str = ""
     LOG_LEVEL: LogLevel = LogLevel.INFO
+    LOG_FILE_PATH: str = "logs/app.log"
     USERS_SECRET: str = ""
     ENVIRONMENT: Literal["local", "pytest", "staging", "production"] = "local"
     ## CORS_ORIGINS and ALLOWED_HOSTS are a JSON-formatted list of origins

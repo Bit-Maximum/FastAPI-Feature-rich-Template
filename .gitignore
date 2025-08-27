@@ -143,3 +143,5 @@ cython_debug/
 /.secrets
 /.qodo/
 /.github/DEMO/
+/app/logs/
+/app/core/logs/

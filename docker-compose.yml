@@ -27,6 +27,8 @@ services:
 
       # Enable redirection for HTTP and HTTPS
       - traefik.http.routers.${TRAEFIK_STACK_NAME?Variable not set}-api-http.middlewares=https-redirect
+    volumes:
+      - ./app/${LOG_DIR}:/app/${LOG_DIR}
     networks:
       - traefik-public
       - default
@@ -49,6 +51,7 @@ services:
     <<: *main_app
     hostname: ${API_TASKIQ_CONTAINER_HOST?Variable not set}
     labels: []
+    volumes: []
     command:
       - taskiq
       - worker

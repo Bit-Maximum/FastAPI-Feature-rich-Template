@@ -12,7 +12,7 @@ from sentry_sdk.integrations.logging import LoggingIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
 from app.core.config import settings
-from app.log import configure_logging
+from app.core.logger import configure_logging
 from app.web.api.router import api_router
 from app.web.lifespan import lifespan_setup
 

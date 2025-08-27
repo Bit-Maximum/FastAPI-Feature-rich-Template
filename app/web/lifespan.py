@@ -1,7 +1,9 @@
+import os
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from loguru import logger
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.aio_pika import AioPikaInstrumentor
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
@@ -22,6 +24,7 @@ from prometheus_fastapi_instrumentator.instrumentation import (
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.core.config import settings
+from app.core.logger import configure_logging
 from app.services.kafka.lifespan import init_kafka, shutdown_kafka
 from app.services.rabbit.lifespan import init_rabbit, shutdown_rabbit
 from app.services.redis.lifespan import init_redis, shutdown_redis
@@ -59,7 +62,7 @@ def setup_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
     tracer_provider = TracerProvider(
         resource=Resource(
             attributes={
-                SERVICE_NAME: "app",
+                SERVICE_NAME: settings.API_CONTAINER_HOST,
                 TELEMETRY_SDK_LANGUAGE: "python",
                 DEPLOYMENT_ENVIRONMENT: settings.ENVIRONMENT,
             },
@@ -145,6 +148,7 @@ async def lifespan_setup(
     app.middleware_stack = None
     if not broker.is_worker_process:
         await broker.startup()
+    configure_logging()
     _setup_db(app)
     setup_opentelemetry(app)
     init_redis(app)
@@ -152,6 +156,15 @@ async def lifespan_setup(
     await init_kafka(app)
     setup_prometheus(app)
     app.middleware_stack = app.build_middleware_stack()
+
+    logger.info(os.environ)
+    logger.info(app.routes)
+
+    logger.debug("Debug log")
+    logger.info("Info log with cid + tracing")
+    logger.warning("Warning log")
+    logger.error("Error log")
+    logger.critical("Critical log")
 
     yield
     if not broker.is_worker_process:
