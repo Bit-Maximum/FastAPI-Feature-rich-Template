@@ -24,11 +24,10 @@ from prometheus_fastapi_instrumentator.instrumentation import (
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.core.config import settings
-from app.core.logger import configure_logging
+from app.core.tkq import broker
 from app.services.kafka.lifespan import init_kafka, shutdown_kafka
 from app.services.rabbit.lifespan import init_rabbit, shutdown_rabbit
 from app.services.redis.lifespan import init_redis, shutdown_redis
-from app.tkq import broker
 
 
 def _setup_db(app: FastAPI) -> None:  # pragma: no cover
@@ -44,6 +43,7 @@ def _setup_db(app: FastAPI) -> None:  # pragma: no cover
     engine = create_async_engine(str(settings.db_url), echo=settings.DB_ECHO)
     session_factory = async_sessionmaker(
         engine,
+        # See https://fastapi-users.github.io/fastapi-users/latest/configuration/databases/sqlalchemy/#asynchronous-driver
         expire_on_commit=False,
     )
     app.state.db_engine = engine
@@ -148,7 +148,6 @@ async def lifespan_setup(
     app.middleware_stack = None
     if not broker.is_worker_process:
         await broker.startup()
-    configure_logging()
     _setup_db(app)
     setup_opentelemetry(app)
     init_redis(app)

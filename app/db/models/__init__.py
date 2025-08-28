@@ -1,4 +1,4 @@
-"""app models."""
+"""Application models."""
 
 import pkgutil
 from pathlib import Path

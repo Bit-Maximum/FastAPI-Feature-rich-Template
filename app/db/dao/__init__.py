@@ -1,1 +1,1 @@
-"""DAO classes."""
+"""Data Access Objects (DAO) classes."""

@@ -9,6 +9,7 @@ from app.core.config import settings
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
+# Algorithm use for encoding & decoding of JWT tokens
 ALGORITHM = "HS256"
 
 

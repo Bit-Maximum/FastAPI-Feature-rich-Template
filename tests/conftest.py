@@ -23,7 +23,7 @@ from app.core.config import settings
 from app.db.dependencies import get_db_session
 from app.db.meta import meta
 from app.db.models import load_all_models
-from app.db.utils import create_database, drop_database
+from app.db.setup import create_database, drop_database
 from app.services.kafka.dependencies import get_kafka_producer
 from app.services.kafka.lifespan import init_kafka, shutdown_kafka
 from app.services.rabbit.dependencies import get_rmq_channel_pool
