@@ -1,3 +1,7 @@
+"""Setup User Authentication using FastAPI User
+See more: https://fastapi-users.github.io/fastapi-users/latest/ .
+"""
+
 import uuid
 from typing import Annotated
 
@@ -70,7 +74,7 @@ def get_jwt_strategy() -> JWTStrategy:
 
     :returns: instance of JWTStrategy with provided settings.
     """
-    return JWTStrategy(secret=settings.USERS_SECRET, lifetime_seconds=None)
+    return JWTStrategy(secret=settings.USERS_SECRET, lifetime_seconds=86400)  # 1 day
 
 
 bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")

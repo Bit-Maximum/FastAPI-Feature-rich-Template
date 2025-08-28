@@ -34,11 +34,11 @@ class DummyDAO:
             select(DummyModel).limit(limit).offset(offset),
         )
 
-        return list(raw_dummies.scalars().fetchall())
+        return list(raw_dummies.scalars().all())
 
     async def filter(self, name: str | None = None) -> list[DummyModel]:
         """
-        Get specific dummy model.
+        Get specific dummy models.
 
         :param name: name of dummy instance.
         :return: dummy models.
@@ -47,4 +47,4 @@ class DummyDAO:
         if name:
             query = query.where(DummyModel.name == name)
         rows = await self.session.execute(query)
-        return list(rows.scalars().fetchall())
+        return list(rows.scalars().all())
