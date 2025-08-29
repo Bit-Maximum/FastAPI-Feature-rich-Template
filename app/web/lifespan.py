@@ -156,14 +156,14 @@ async def lifespan_setup(
     setup_prometheus(app)
     app.middleware_stack = app.build_middleware_stack()
 
-    logger.info(os.environ)
-    logger.info(app.routes)
-
     logger.debug("Debug log")
     logger.info("Info log with cid + tracing")
     logger.warning("Warning log")
     logger.error("Error log")
     logger.critical("Critical log")
+
+    logger.info(os.environ)
+    logger.info(app.routes)
 
     yield
     if not broker.is_worker_process:
