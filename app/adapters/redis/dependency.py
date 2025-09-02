@@ -1,3 +1,5 @@
+"""Dependencies for Redis service."""
+
 from collections.abc import AsyncGenerator
 from typing import Annotated
 

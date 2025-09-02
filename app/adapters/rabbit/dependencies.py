@@ -1,3 +1,5 @@
+"""Dependencies for RabbitMQ service."""
+
 from typing import Annotated
 
 from aio_pika import Channel

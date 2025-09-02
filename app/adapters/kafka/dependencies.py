@@ -1,3 +1,5 @@
+"""Dependencies for Kafka service."""
+
 from typing import Annotated
 
 from aiokafka import AIOKafkaProducer
