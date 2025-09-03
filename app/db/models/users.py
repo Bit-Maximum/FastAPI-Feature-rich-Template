@@ -17,11 +17,11 @@ from fastapi_users.db import SQLAlchemyBaseUserTableUUID, SQLAlchemyUserDatabase
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
-from app.db.base import Base
 from app.db.dependencies import get_db_session
+from app.db.models.base import BaseMetadata
 
 
-class User(SQLAlchemyBaseUserTableUUID, Base):
+class User(SQLAlchemyBaseUserTableUUID, BaseMetadata):
     """Represents a user entity."""
 
 

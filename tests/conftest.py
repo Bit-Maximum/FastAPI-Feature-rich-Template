@@ -19,17 +19,17 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from app.adapters.kafka.dependencies import get_kafka_producer
+from app.adapters.kafka.lifespan import init_kafka, shutdown_kafka
+from app.adapters.rabbit.dependencies import get_rmq_channel_pool
+from app.adapters.rabbit.lifespan import init_rabbit, shutdown_rabbit
+from app.adapters.redis.dependency import get_redis_pool
+from app.core.application import get_app
 from app.core.config import settings
 from app.db.dependencies import get_db_session
 from app.db.meta import meta
 from app.db.models import load_all_models
 from app.db.setup import create_database, drop_database
-from app.services.kafka.dependencies import get_kafka_producer
-from app.services.kafka.lifespan import init_kafka, shutdown_kafka
-from app.services.rabbit.dependencies import get_rmq_channel_pool
-from app.services.rabbit.lifespan import init_rabbit, shutdown_rabbit
-from app.services.redis.dependency import get_redis_pool
-from app.web.application import get_app
 
 
 @pytest.fixture(scope="session")

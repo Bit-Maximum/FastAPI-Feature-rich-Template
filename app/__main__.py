@@ -36,7 +36,7 @@ def main() -> None:
     """Entrypoint of the application."""
     set_multiproc_dir()
     uvicorn.run(
-        "app.web.application:get_app",
+        "app.core.application:get_app",
         workers=settings.UVICORN_WORKERS_COUNT,
         host=settings.UVICORN_HOST,
         port=settings.UVICORN_PORT,

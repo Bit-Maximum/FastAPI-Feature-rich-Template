@@ -63,7 +63,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: LogLevel = LogLevel.INFO
     LOG_FILE_PATH: str = "logs/app.log"
     USERS_SECRET: str = ""
-    ENVIRONMENT: Literal["local", "pytest", "staging", "production"] = "local"
+    ENVIRONMENT: Literal["debug", "local", "pytest", "staging", "production"] = "local"
     ## CORS_ORIGINS and ALLOWED_HOSTS are a JSON-formatted list of origins
     ## For example: ["http://localhost:4200", "https://myfrontendapp.com"]
     ALLOWED_HOSTS: list[str] = ["localhost", "127.0.0.1", "api.localhost"]
@@ -74,7 +74,7 @@ class Settings(BaseSettings):
     APP_VERSION: str = "latest"
     APP_HOST: str = "0.0.0.0"
 
-    # Docker services` hosts
+    # Docker adapters` hosts
     API_CONTAINER_HOST: str = "app-api"
     API_TASKIQ_CONTAINER_HOST: str = "api-taskiq"
     DB_CONTAINER_HOST: str = "app-db"
