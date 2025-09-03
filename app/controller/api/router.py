@@ -1,6 +1,6 @@
 from fastapi.routing import APIRouter
 
-from app.web.api import docs, dummy, echo, kafka, monitoring, rabbit, redis, users
+from app.controller.api import docs, dummy, echo, kafka, monitoring, rabbit, redis, users
 
 api_router = APIRouter()
 api_router.include_router(monitoring.router)

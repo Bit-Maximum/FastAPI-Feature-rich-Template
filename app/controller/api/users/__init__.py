@@ -1,5 +1,5 @@
 """API for checking project status."""
 
-from app.web.api.monitoring.views import router
+from app.controller.api.users.views import router
 
 __all__ = ["router"]
