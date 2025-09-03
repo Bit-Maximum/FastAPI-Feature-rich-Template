@@ -145,3 +145,4 @@ cython_debug/
 /.github/DEMO/
 /app/logs/
 /app/core/logs/
+/app/db/migrations/versions/
