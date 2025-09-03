@@ -53,11 +53,11 @@ app
 │   ├── dao  # Data Access Objects. Contains different classes to interact with database.
 │   └── models  # Package contains different models for ORMs.
 ├── __main__.py  # Startup script. Starts uvicorn.
-├── services  # Package for different external services such as rabbit or redis etc.
+├── adapters  # Package for different external adapters such as rabbit or redis etc.
 ├── settings.py  # Main configuration settings for project.
 ├── static  # Static content.
 ├── tests  # Tests for project.
-└── web  # Package contains web server. Handlers, startup config.
+└── controller  # Package contains controller server. Handlers, startup config.
     ├── api  # Package with all handlers.
     │   └── router.py  # Main router.
     ├── application.py  # FastAPI application configuration.

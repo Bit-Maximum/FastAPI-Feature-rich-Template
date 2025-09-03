@@ -3,14 +3,14 @@ services:
     image: ${PROMETHEUS_IMAGE}
     container_name: prometheus
     command:
-      - --web.console.templates=/etc/prometheus/consoles
-      - --web.console.libraries=/etc/prometheus/console_libraries
+      - --controller.console.templates=/etc/prometheus/consoles
+      - --controller.console.libraries=/etc/prometheus/console_libraries
       - --storage.tsdb.retention.time=1h
       - --config.file=/etc/prometheus/prometheus-config.yaml
       - --storage.tsdb.path=/prometheus
-      - --web.enable-lifecycle
-      - --web.route-prefix=/
-      - --web.enable-otlp-receiver
+      - --controller.enable-lifecycle
+      - --controller.route-prefix=/
+      - --controller.enable-otlp-receiver
       - --enable-feature=exemplar-storage
     volumes:
       - ./src/prometheus/prometheus-config.yaml:/etc/prometheus/prometheus-config.yaml

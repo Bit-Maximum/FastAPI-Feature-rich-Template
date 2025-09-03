@@ -1,6 +1,6 @@
 services:
 
-  # Local services are available on their ports, but also available on:
+  # Local adapters are available on their ports, but also available on:
   # http://api.localhost.myapp.com: backend
   # etc. To enable it, update .env, set:
   # DOMAIN=localhost.myapp.com
@@ -13,11 +13,11 @@ services:
       - "8090:8080"
     # Duplicate the command from docker-compose.yml to add --api.insecure=true
     command:
-      # Enable Docker in Traefik, so that it reads labels from Docker services
+      # Enable Docker in Traefik, so that it reads labels from Docker adapters
       - --providers.docker
-      # Add a constraint to only use services with the label for this stack
+      # Add a constraint to only use adapters with the label for this stack
       - --providers.docker.constraints=Label(`traefik.constraint-label`, `traefik-public`)
-      # Do not expose all Docker services, only the ones explicitly exposed
+      # Do not expose all Docker adapters, only the ones explicitly exposed
       - --providers.docker.exposedbydefault=false
       # Create an entrypoint "http" listening on port 80
       - --entrypoints.http.address=:80

@@ -84,8 +84,11 @@ lint.ignore = [
     "ERA001",
     "PLR0913",
     "N803",
+    "N805",
     "N815",
     "UP046",
+    "FBT001",
+    "FBT002",
 ]
 exclude = [
     "app/db/migrations",
