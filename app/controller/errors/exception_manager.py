@@ -23,7 +23,7 @@ from app.controller.errors.error_responses import ERROR_RESPONSES
 from app.core.config import settings
 
 if TYPE_CHECKING:
-    from app.controller.api.errors.error_message import ErrorMessage
+    from app.controller.api.v1.errors.schema import ErrorMessage
 
 
 def _log_exception(request: Request, exc: Exception) -> None:

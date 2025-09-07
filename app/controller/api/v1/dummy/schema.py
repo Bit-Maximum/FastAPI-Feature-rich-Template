@@ -1,25 +1,6 @@
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, Field
 
 from app.controller.utils.pagination import Pagination
-
-
-class DummyModelDTO(BaseModel):
-    """
-    DTO for dummy models.
-
-    It returned when accessing dummy models from the API.
-    """
-
-    id: int
-    name: str
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class DummyModelInputDTO(BaseModel):
-    """DTO for creating new dummy model."""
-
-    name: str
 
 
 class DummyDataResponse(BaseModel):
@@ -41,7 +22,7 @@ class DummyUpdate(BaseModel):
     name: str | None = Field(default=None, examples=["John Doe"])
 
 
-class CustomerListResponse(BaseModel):
+class DummyListResponse(BaseModel):
     """Model for the response of a dummy API endpoint.
 
     This class represents the structure of the response returned by an customer API endpoint.

@@ -5,7 +5,7 @@ from fastapi.param_functions import Depends
 from redis.asyncio import ConnectionPool, Redis
 
 from app.adapters.redis.dependency import get_redis_pool
-from app.controller.api.redis.schema import RedisValueDTO
+from app.controller.api.v1.redis.schema import RedisValueDTO
 
 router = APIRouter()
 

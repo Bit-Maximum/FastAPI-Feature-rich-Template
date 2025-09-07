@@ -4,7 +4,7 @@ from loguru import logger
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.controller.api.dummy.schema import DummyCreate, DummyDataResponse, DummyUpdate
+from app.controller.api.v1.dummy.schema import DummyCreate, DummyDataResponse, DummyUpdate
 from app.db.dao.base import Filter
 from app.db.dao.dummy_dao import dummy_dao
 from app.db.exceptions import ElementNotFoundError

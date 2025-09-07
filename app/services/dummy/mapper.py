@@ -1,4 +1,4 @@
-from app.controller.api.dummy.schema import DummyCreate, DummyDataResponse
+from app.controller.api.v1.dummy.schema import DummyCreate, DummyDataResponse
 from app.db.models.dummy_model import DummyModel
 
 

@@ -4,7 +4,7 @@ from aiokafka import AIOKafkaProducer
 from fastapi import APIRouter, Depends
 
 from app.adapters.kafka.dependencies import get_kafka_producer
-from app.controller.api.kafka.schema import KafkaMessage
+from app.controller.api.v1.kafka.schema import KafkaMessage
 
 router = APIRouter()
 

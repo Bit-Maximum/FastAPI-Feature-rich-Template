@@ -5,7 +5,7 @@ Each `ErrorMessage` object contains a list of `ErrorMessageData`
 objects that provide details about the error.
 """
 
-from app.controller.api.errors.error_message import ErrorMessage, ErrorMessageData
+from app.controller.api.v1.errors.schema import ErrorMessage, ErrorMessageData
 
 ERROR_RESPONSES = {
     400: ErrorMessage(

@@ -1,10 +1,14 @@
 """Defines data models for representing hyperlinks and pagination configuration."""
 
 import math
+from typing import Any
 
 from pydantic import AnyHttpUrl, BaseModel, Field, field_validator
 
 EXAMPLE_URL = "http://localhost:8000/api/v1/dummies?limit=10&offset=0"
+
+MAX_OFFSET = 10_000
+MAX_LIMIT = 2000
 
 
 def calculate_page_number(offset: int, limit: int) -> int:
@@ -139,6 +143,7 @@ class PaginationLinks(BaseModel):
         last_href = f"{base_href}&offset={max(0, (last_page - 1) * limit)}"
 
         first_page = HyperLink(href=str(AnyHttpUrl(first_href)))
+        # On first/last page, prev/next links fall back to actual page (self_href)
         prev_page = (
             HyperLink(href=str(AnyHttpUrl(prev_href)))
             if offset > 0
@@ -191,15 +196,44 @@ class Pagination(BaseModel):
         ],
     )
 
+    _field_constraints = {
+        # Reference constraints for custom validation or schema documentation
+        "offset": {"min": 0, "max": MAX_OFFSET},
+        "limit": {"min": 1, "max": MAX_LIMIT},
+        "page_number": {"min": 1, "max": 1_000_000},
+        "total_pages": {"min": 0, "max": 1_000_000},
+        "total_elements": {"min": 0, "max": 1_000_000_000},
+    }
+
     @field_validator(
         "offset", "limit", "page_number", "total_pages", "total_elements", mode="before"
     )
-    def validate_values(cls: type["Pagination"], value: int | None) -> int | None:
-        """Validates values of the model."""
-        max_value = 1000
-        min_value = 0
+    def validate_values(cls: type["Pagination"], value: int | None, info: Any) -> int | None:
+        """Validate numeric field values are within allowed bounds.
+
+        Ensures the value is within [min_value, max_value].
+
+        Raises:
+            ValueError: If the value is outside allowed bounds.
+        """
+        if value is None:
+            error_message = "Provided value is None. Must be an integer."
+            raise ValueError(error_message)
+
+        field_name = info.field_name
+        constraints = cls._field_constraints.get(field_name)
+
+        if not constraints:
+            error_message = (
+                f"Unknown field. Provided field '{field_name}'. "
+                f"Must be one of {cls._field_constraints.keys()}."
+            )
+            raise ValueError(error_message)
+
+        min_value = constraints["min"]
+        max_value = constraints["max"]
         if value and (value > max_value or value < min_value):
-            error_message = f"Must be less than {min_value} or more than {max_value}."
+            error_message = f"{field_name} must be between {min_value} and {max_value}, got {value}"
             raise ValueError(error_message)
         return value
 

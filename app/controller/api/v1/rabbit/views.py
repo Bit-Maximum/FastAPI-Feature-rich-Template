@@ -5,7 +5,7 @@ from aio_pika.pool import Pool
 from fastapi import APIRouter, Depends
 
 from app.adapters.rabbit.dependencies import get_rmq_channel_pool
-from app.controller.api.rabbit.schema import RMQMessageDTO
+from app.controller.api.v1.rabbit.schema import RMQMessageDTO
 
 router = APIRouter()
 

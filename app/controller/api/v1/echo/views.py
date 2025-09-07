@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.controller.api.echo.schema import Message
+from app.controller.api.v1.echo.schema import Message
 
 router = APIRouter()
 
