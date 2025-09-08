@@ -16,6 +16,7 @@ from app.db.meta import meta
 class BaseMetadata(DeclarativeBase):
     """BaseMetadata for all models."""
 
+    # see: https://alembic.sqlalchemy.org/en/latest/naming.html#integration-of-naming-conventions-into-operations-autogenerate
     metadata = meta
 
 
