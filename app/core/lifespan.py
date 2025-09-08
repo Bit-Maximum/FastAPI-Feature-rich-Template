@@ -40,11 +40,19 @@ def _setup_db(app: FastAPI) -> None:  # pragma: no cover
 
     :param app: fastAPI application.
     """
-    engine = create_async_engine(str(settings.db_url), echo=settings.DB_ECHO)
+    engine = create_async_engine(
+        str(settings.db_url),
+        echo=settings.DB_ECHO,
+        echo_pool=settings.DB_ECHO_POOL,
+        pool_size=settings.DB_POOL_SIZE,
+        max_overflow=settings.DB_MAX_OVERFLOW,
+    )
     session_factory = async_sessionmaker(
         engine,
         # See https://fastapi-users.github.io/fastapi-users/latest/configuration/databases/sqlalchemy/#asynchronous-driver
         expire_on_commit=False,
+        autoflush=False,
+        # autocommit=False,
     )
     app.state.db_engine = engine
     app.state.db_session_factory = session_factory

@@ -104,6 +104,9 @@ class Settings(BaseSettings):
     DB_PASS: str = ""
     DB_NAME: str = "app"
     DB_ECHO: bool = False
+    DB_ECHO_POOL: bool = False
+    DB_POOL_SIZE: int = 5
+    DB_MAX_OVERFLOW: int = 10
 
     # SQLAlchemy engine settings
     # The size of the pool to be maintained, defaults to 10
