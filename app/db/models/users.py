@@ -74,10 +74,15 @@ def get_jwt_strategy() -> JWTStrategy:
 
     :returns: instance of JWTStrategy with provided settings.
     """
-    return JWTStrategy(secret=settings.USERS_SECRET, lifetime_seconds=86400)  # 1 day
+    return JWTStrategy(
+        lifetime_seconds=settings.JWT_LIFETIME_SECONDS,
+        algorithm=settings.JWT_ALGORITHM,
+        secret=settings.JWT_PRIVATE_KEY_PATH.read_text(),
+        public_key=settings.JWT_PUBLIC_KEY_PATH.read_text(),
+    )
 
 
-bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
+bearer_transport = BearerTransport(tokenUrl=settings.bearer_token_url)
 auth_jwt = AuthenticationBackend(
     name="jwt",
     transport=bearer_transport,
@@ -98,3 +103,5 @@ backends = [
 api_users = FastAPIUsers[User, uuid.UUID](get_user_manager, backends)
 
 current_active_user = api_users.current_user(active=True)
+
+current_active_superuser = api_users.current_user(active=True, superuser=True)

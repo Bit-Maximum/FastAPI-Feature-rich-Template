@@ -31,6 +31,7 @@ from typing import Literal
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from yarl import URL
 
+BASE_DIR = Path(__file__).parent.parent
 TEMP_DIR = Path(gettempdir())
 
 
@@ -81,6 +82,18 @@ class Settings(BaseSettings):
     REDIS_CONTAINER_HOST: str = "app-redis"
     RABBITMQ_CONTAINER_HOST: str = "app-rmq"
     KAFKA_CONTAINER_HOST: str = "app-kafka"
+
+    # JWT
+    JWT_LIFETIME_SECONDS: int = 3600
+    JWT_ALGORITHM: str = "ES256"
+    JWT_PRIVATE_KEY_PATH: Path = BASE_DIR / "certs" / "private-key.pem"
+    JWT_PUBLIC_KEY_PATH: Path | None = BASE_DIR / "certs" / "public-key.pem"
+
+    @property
+    def bearer_token_url(self) -> str:
+        """URL path for JWT bearer token login endpoint."""
+        parts = (self.API_BASE_PATH, "/auth", "/jwt", "/login")
+        return "".join(parts).removeprefix("/")
 
     # Emails
     SMTP_HOST: str | None = None
