@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from fastapi.security import HTTPBearer
 
 from app.db.models.users import (
     UserCreate,
@@ -10,6 +11,8 @@ from app.db.models.users import (
 )
 
 router = APIRouter()
+
+http_bearer = HTTPBearer(auto_error=False)
 
 router.include_router(
     api_users.get_register_router(UserRead, UserCreate),
@@ -27,6 +30,7 @@ router.include_router(
     api_users.get_verify_router(UserRead),
     prefix="/auth",
     tags=["auth"],
+    dependencies=[Depends(http_bearer)],
 )
 
 router.include_router(
