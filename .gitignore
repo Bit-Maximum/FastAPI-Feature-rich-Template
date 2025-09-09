@@ -146,3 +146,4 @@ cython_debug/
 /app/logs/
 /app/core/logs/
 /app/db/migrations/versions/
+/app/certs/
