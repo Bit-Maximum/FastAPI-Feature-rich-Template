@@ -28,6 +28,7 @@ from pathlib import Path
 from tempfile import gettempdir
 from typing import Literal
 
+from pydantic import EmailStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from yarl import URL
 
@@ -94,6 +95,14 @@ class Settings(BaseSettings):
         """URL path for JWT bearer token login endpoint."""
         parts = (self.API_BASE_PATH, "/auth", "/jwt", "/login")
         return "".join(parts).removeprefix("/")
+
+    # Actions
+    # Create Superuser
+    DEFAULT_EMAIL: EmailStr = "admin@example.com"
+    DEFAULT_PASSWORD: str = ""
+    DEFAULT_IS_ACTIVE: bool = True
+    DEFAULT_IS_SUPERUSER: bool = True
+    DEFAULT_IS_VERIFIED: bool = True
 
     # Emails
     SMTP_HOST: str | None = None
