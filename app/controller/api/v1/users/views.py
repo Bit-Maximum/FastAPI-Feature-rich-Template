@@ -30,13 +30,13 @@ router.include_router(
     api_users.get_verify_router(UserRead),
     prefix="/auth",
     tags=["auth"],
-    dependencies=[Depends(http_bearer)],
 )
 
 router.include_router(
     api_users.get_users_router(UserRead, UserUpdate),
     prefix="/users",
     tags=["users"],
+    dependencies=[Depends(http_bearer)],
 )
 router.include_router(
     api_users.get_auth_router(auth_jwt),
