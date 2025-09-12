@@ -100,7 +100,7 @@ def configure_logging() -> None:  # pragma: no cover
     logging.basicConfig(handlers=[intercept_handler], level=logging.NOTSET)
 
     log_level = (
-        LogLevel.DEBUG if settings.ENVIRONMENT in ["local", "pytest"] else settings.LOG_LEVEL
+        LogLevel.DEBUG if settings.ENVIRONMENT in ["debug", "pytest"] else settings.LOG_LEVEL
     )
 
     for logger_name in logging.root.manager.loggerDict:

@@ -71,7 +71,6 @@ class Settings(BaseSettings):
     ALLOWED_HOSTS: list[str] = ["localhost", "127.0.0.1", "api.localhost"]
     CORS_ORIGINS: list[str] = ["localhost", "127.0.0.1"]
 
-    APP_LOG_FILE_PATH: str = "logs/app.log"
     API_BASE_PATH: str = "/api"
     APP_VERSION: str = "latest"
     APP_HOST: str = "0.0.0.0"
@@ -177,7 +176,9 @@ class Settings(BaseSettings):
     # E.G. http://localhost:4317
     OPENTELEMETRY_ENDPOINT: str | None = None
 
-    KAFKA_ADDR: list[str] = ["app-kafka:9092"]
+    # Kafka
+    KAFKA_CLIENT_ID: str = "api"
+    KAFKA_PORT: int = 9092
 
     # Additional Project Settings
     BASE_API_PATH: str = "/api"
@@ -215,7 +216,7 @@ class Settings(BaseSettings):
             path = f"/{self.REDIS_DATABASE}"
         return URL.build(
             scheme="redis",
-            host=self.REDIS_HOST,
+            host="localhost" if self.ENVIRONMENT in ["debug", "local"] else self.REDIS_HOST,
             port=self.REDIS_PORT,
             password=self.REDIS_PASS,
             path=path,
@@ -230,12 +231,18 @@ class Settings(BaseSettings):
         """
         return URL.build(
             scheme="amqp",
-            host=self.RABBITMQ_HOST,
+            host="localhost" if self.ENVIRONMENT in ["debug", "local"] else self.RABBITMQ_HOST,
             port=self.RABBITMQ_PORT,
             user=self.RABBITMQ_USER,
             password=self.RABBITMQ_PASS,
             path=self.RABBITMQ_VHOST,
         )
+
+    @property
+    def kafka_url(self) -> str:
+        """Assemble Kafka broker URL from settings."""
+        host = "localhost" if self.ENVIRONMENT in ["debug", "local"] else self.KAFKA_CONTAINER_HOST
+        return f"{host}:{self.KAFKA_PORT}"
 
 
 settings = Settings()
