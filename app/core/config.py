@@ -196,7 +196,7 @@ class Settings(BaseSettings):
         """
         return URL.build(
             scheme="postgresql+asyncpg",
-            host=self.DB_HOST,
+            host="localhost" if self.ENVIRONMENT in ["debug", "local"] else self.DB_HOST,
             port=self.DB_PORT,
             user=self.DB_USER,
             password=self.DB_PASS,

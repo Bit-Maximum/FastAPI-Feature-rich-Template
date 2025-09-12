@@ -98,11 +98,6 @@ services:
     volumes:
       # Adds current directory as volume.
       - .:/app/src/
-    command:
-      - taskiq
-      - worker
-      - app.core.tkq:broker
-#      - --reload
 
   redis:
     restart: "no"
