@@ -217,7 +217,6 @@ class Settings(BaseSettings):
             scheme="redis",
             host=self.REDIS_HOST,
             port=self.REDIS_PORT,
-            user=self.REDIS_USER,
             password=self.REDIS_PASS,
             path=path,
         )

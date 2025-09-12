@@ -4,8 +4,8 @@ https://docs.sqlalchemy.org/en/20/orm/declarative_styles.html#example-two-datacl
 Dataclass style for powerful autocompletion support.
 """
 
+import uuid
 from datetime import UTC, datetime
-from uuid import uuid4
 
 from sqlalchemy import UUID, DateTime, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, declared_attr, mapped_column
@@ -35,11 +35,13 @@ class Base(BaseMetadata):
         __tablename__(): Returns the table name, which is the lowercased class name.
     """
 
-    id: Mapped[UUID] = mapped_column(
+    __abstract__ = True
+
+    id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         primary_key=True,
         index=True,
-        default=uuid4,
+        default=uuid.uuid4,
     )
 
     # Generate __tablename__ automatically

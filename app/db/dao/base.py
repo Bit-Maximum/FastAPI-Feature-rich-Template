@@ -1,11 +1,12 @@
 """Data Access Object with default methods to Create, Read, Update, Delete (CRUD)."""
 
+import uuid
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar
 
 from loguru import logger
 from pydantic import UUID4, BaseModel, Field
-from sqlalchemy import UUID, func, or_, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute
@@ -33,7 +34,7 @@ class Filter(BaseModel):
         ...,
         examples=["eq"],
     )
-    value: str | int | float | bool | UUID = Field(..., examples=["John Doe"])
+    value: str | int | float | bool | uuid.UUID = Field(..., examples=["John Doe"])
 
 
 class DAOBase(Generic[ModelType]):

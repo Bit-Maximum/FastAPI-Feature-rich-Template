@@ -24,7 +24,8 @@ async def send_rabbit_message(
     async with pool.acquire() as conn:
         exchange = await conn.declare_exchange(
             name=message.exchange_name,
-            auto_delete=True,
+            durable=True,
+            auto_delete=False,
         )
         await exchange.publish(
             message=Message(

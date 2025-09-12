@@ -3,7 +3,7 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Body, Depends, Path, Query, Request, status
 from fastapi.responses import JSONResponse, Response
 from loguru import logger
-from pydantic.v1 import UUID4
+from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.controller.api.v1.dummy.schema import (

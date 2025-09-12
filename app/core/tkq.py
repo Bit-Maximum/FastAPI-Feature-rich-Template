@@ -19,5 +19,5 @@ if settings.ENVIRONMENT.lower() == "pytest":
 
 taskiq_fastapi.init(
     broker,
-    "app.controller.application:get_app",
+    "app.core.application:get_app",
 )
