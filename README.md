@@ -1,24 +1,15 @@
-# Work in progress | Breaking changes expected
+# I am currently working on my master's thesis.
 
-This project was generated using fastapi_template.
+## Work in progress | Breaking changes expected
 
-## Poetry
+### Future plans:
+- Add caching with Redis
+- Refactor integration with Taskiq
+- Rework documentation
+- Add metrics with OpenTelemetry and Grafana
+- Add interactive demo
 
-This project uses poetry. It's a modern dependency management
-tool.
 
-To run the project use this set of commands:
-
-```bash
-poetry install
-poetry run python -m app
-```
-
-This will start the server on the configured host.
-
-You can find swagger documentation at `/api/docs`.
-
-You can read more about poetry here: https://python-poetry.org/
 
 ## Docker
 
