@@ -1,5 +1,5 @@
 # Start from a slim version of Python 3.13
-FROM python:3.13-slim AS base
+FROM python:3.14-slim AS base
 COPY --from=ghcr.io/astral-sh/uv:0.6.4 /uv /uvx /bin/
 
 # Set Envs
