@@ -105,7 +105,7 @@ services:
       - "6379:6379"
 
   rmq:
-    image: rabbitmq:4.1.4-management-alpine
+    image: rabbitmq:4.2.0-management-alpine
     restart: "no"
     ports:
       - "5672:5672"
