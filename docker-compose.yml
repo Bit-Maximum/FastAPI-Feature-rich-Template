@@ -134,7 +134,7 @@ services:
       retries: 20
 
   rmq:
-    image: rabbitmq:4.2.0-alpine
+    image: rabbitmq:4.2.1-alpine
     hostname: ${RABBITMQ_CONTAINER_HOST?Variable not set}
     restart: always
     environment:
