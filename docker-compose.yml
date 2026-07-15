@@ -153,7 +153,7 @@ services:
       retries: 20
 
   kafka:
-    image: bitnami/kafka:4.0.0-debian-12-r10
+    image: soldevelo/kafka:4.0.0-debian-12-r0
     hostname: ${KAFKA_CONTAINER_HOST?Variable not set}
     environment:
       KAFKA_CFG_NODE_ID: ${KAFKA_CFG_NODE_ID?Variable not set}
